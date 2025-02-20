@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <!-- Load CSS -->
+        <link rel="stylesheet" href="/styling/style.css" />
+        <!-- Load Favicon -->
+        <link type="image/x-icon" href="/favicon.ico" rel="icon" />
+        <link type="image/x-icon" href="/favicon.ico" rel="shortcut icon" />
+        <!-- Set Page Title -->
+        <title>TapGate | Account</title>
+    </head>
+    <body>
+        <!-- Load Header -->
+        <span id="header"> </span>
+
+        <!-- Main -->
+        <div class="page-wrapper">
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <h1>Sections</h1>
+                <p class="subscript">
+                    Quickly navigate to a section of interest.
+                </p>
+                <hr />
+                <ul>
+                    <li><a href="#profile">Update profile</a></li>
+                    <li><a href="#password">Change password</a></li>
+                </ul>
+            </div>
+
+            <!-- Content -->
+            <div class="page-content">
+                <h1>Account</h1>
+                <p class="subscript">
+                    Manage your personal info, preferences, and security
+                    options.
+                </p>
+                <hr />
+
+                <div class="account-wrapper">
+                    <h2 id="profile">Update profile</h2>
+                    <!-- Add js functionality -->
+                    <form action="#" method="POST">
+                        <label for="first-name">First name</label>
+                        <input
+                            type="text"
+                            id="first-name"
+                            name="first-name"
+                            placeholder="{current-first-name}"
+                        />
+                        <label for="last-name">Last name</label>
+                        <input
+                            type="text"
+                            id="last-name"
+                            name="last-name"
+                            placeholder="{curren-last-name}"
+                        />
+                        <label for="email">Email</label>
+                        <input
+                            type="email"
+                            id="email"
+                            name="email"
+                            placeholder="{curent-email}"
+                        />
+                        <label for="password">Confirm password</label>
+                        <input
+                            type="password"
+                            id="password"
+                            name="password"
+                            required
+                        />
+                        <button type="submit">Update profile</button>
+                    </form>
+
+                    <hr />
+                    <h2 id="password">Change password</h2>
+                    <!-- Add js functionality -->
+                    <form action="#" method="POST">
+                        <label for="current-password">Current password</label>
+                        <input
+                            type="password"
+                            id="current-password"
+                            name="current-password"
+                            required
+                        />
+                        <label for="new-password">New password</label>
+                        <input
+                            type="password"
+                            id="new-password"
+                            name="new-password"
+                            required
+                        />
+                        <label for="confirm-password"
+                            >Confirm new password</label
+                        >
+                        <input
+                            type="password"
+                            id="confirm-password"
+                            name="confirm-password"
+                            required
+                        />
+                        <button type="submit">Change password</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Theme Toggle -->
+        <span id="moon-toggle"> </span>
+        <span id="sun-toggle"> </span>
+        
+        <!-- Load Footer -->
+        <span id="footer"> </span>
+    </body>
+
+    <script src="/js/loadElements.js"></script>
+    <script src="/js/loadTheme.js"></script>
+</html>

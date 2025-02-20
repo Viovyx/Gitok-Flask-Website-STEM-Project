@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <!-- Load CSS -->
+        <link rel="stylesheet" href="/styling/style.css" />
+        <!-- Load Favicon -->
+        <link type="image/x-icon" href="/favicon.ico" rel="icon" />
+        <link type="image/x-icon" href="/favicon.ico" rel="shortcut icon" />
+        <!-- Set Page Title -->
+        <title>TapGate | Login</title>
+    </head>
+    <body>
+        <!-- Main -->
+        <div class="page-wrapper">
+            <!-- Login -->
+            <div class="login-wrapper">
+                <div class="login-box">
+                    <img src="/static/logo_color.png" alt="TapGate Logo" />
+                    <h1>TapGate</h1>
+                    <!-- temporary login without auth -->
+                    <form action="/home/" method="POST">
+                        <input
+                            type="text"
+                            id="username"
+                            name="username"
+                            placeholder="Username"
+                            required
+                        />
+                        <input
+                            type="password"
+                            id="password"
+                            name="password"
+                            placeholder="Password"
+                            required
+                        />
+                        <!-- Add error logic -->
+                        <p class="error hidden" id="error-message"></p>
+                        <button type="submit">Login</button>
+                    </form>
+                    <p class="subscript">
+                        Don't have an account? Please contact your administrator
+                        for help.
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Theme Toggle -->
+        <span id="moon-toggle"> </span>
+        <span id="sun-toggle"> </span>
+        
+        <!-- Load Footer -->
+        <span id="footer"> </span>
+    </body>
+
+    <script src="/js/loadElements.js"></script>
+    <script src="/js/loadTheme.js"></script>
+</html>

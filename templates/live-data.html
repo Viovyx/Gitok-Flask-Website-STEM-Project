@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <!-- Load CSS -->
+        <link rel="stylesheet" href="/styling/style.css" />
+        <!-- Load Favicon -->
+        <link type="image/x-icon" href="/favicon.ico" rel="icon" />
+        <link type="image/x-icon" href="/favicon.ico" rel="shortcut icon" />
+        <!-- Chart.js CDN -->
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <!-- Set Page Title -->
+        <title>TapGate | Live Data</title>
+    </head>
+    <body>
+        <!-- Load Header -->
+        <span id="header"> </span>
+
+        <!-- Main -->
+        <div class="page-wrapper">
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <h1>Sections</h1>
+                <p class="subscript">
+                    Quickly navigate to a section of interest.
+                </p>
+                <hr />
+                <ul>
+                    <li><a href="#doors">Doors</a></li>
+                    <li><a href="#scanners">Scanners</a></li>
+                </ul>
+            </div>
+
+            <!-- Content -->
+            <div class="page-content">
+                <h1>Live Data</h1>
+                <p class="subscript">
+                    Real-time insights and trends at a glance.
+                </p>
+                <hr />
+
+                <h2 id="doors">Doors</h2>
+                <div class="legend row">
+                    <span class="legend-success">door open</span>
+                    <span class="legend-warning">door unknown</span>
+                    <span class="legend-error">door closed</span>
+                </div>
+                <div class="data-grid">
+                    <div class="item open" id="door-1">
+                        <h3>Door 1</h3>
+                        <ul>
+                            <li>{user1} (id: {id})</li>
+                            <li>{user2} (id: {id})</li>
+                            <li>{user3} (id: {id})</li>
+                        </ul>
+                    </div>
+                    <div class="item warning" id="door-2">
+                        <h3>Door 2</h3>
+                        <ul>
+                            <li>{user1} (id: {id})</li>
+                            <li>{user2} (id: {id})</li>
+                            <li>{user3} (id: {id})</li>
+                        </ul>
+                    </div>
+                    <div class="item closed" id="door-3">
+                        <h3>Door 3</h3>
+                        <ul>
+                            <li>{user1} (id: {id})</li>
+                            <li>{user2} (id: {id})</li>
+                            <li>{user3} (id: {id})</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <hr />
+                <h2 id="scanners">Scanners</h2>
+                <div class="chart-container">
+                    <canvas id="scanner-chart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Theme Toggle -->
+        <span id="moon-toggle"> </span>
+        <span id="sun-toggle"> </span>
+        
+        <!-- Load Footer -->
+        <span id="footer"> </span>
+    </body>
+
+    <script src="/js/loadElements.js"></script>
+    <script src="/js/loadTheme.js"></script>
+    <script src="placeholder-graphs.js"></script>
+</html>

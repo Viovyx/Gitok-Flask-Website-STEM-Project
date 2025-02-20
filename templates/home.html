@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <!-- Load CSS -->
+        <link rel="stylesheet" href="/styling/style.css" />
+        <!-- Load Favicon -->
+        <link type="image/x-icon" href="/favicon.ico" rel="icon" />
+        <link type="image/x-icon" href="/favicon.ico" rel="shortcut icon" />
+        <!-- Set Page Title -->
+        <title>TapGate | Home</title>
+    </head>
+    <body>
+        <!-- Load Header -->
+        <span id="header"> </span>
+
+        <!-- Main -->
+        <div class="page-wrapper">
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <h1>Sections</h1>
+                <p class="subscript">
+                    Quickly navigate to a section of interest.
+                </p>
+                <hr />
+                <ul>
+                    <li><a href="#keycards">Keycards</a></li>
+                    <li><a href="#doors">Doors</a></li>
+                    <li><a href="#scanners">Scanners</a></li>
+                    <li><a href="#users">Users</a></li>
+                    <li><a href="#groups">Groups</a></li>
+                </ul>
+            </div>
+
+            <!-- Content -->
+            <div class="page-content">
+                <h1>
+                    Welcome to the TapGate admin panel
+                    <b id="username">{user}</b>!
+                </h1>
+                <p class="subscript">
+                    Manage your doors and scanners with ease.
+                </p>
+                <hr />
+
+                <h2 id="keycards">Keycards</h2>
+                <div class="data-grid">
+                    <div
+                        class="item"
+                        id="keycard-1"
+                        onclick="openPanel('edit')"
+                    >
+                        <h3 id="name">Keycard 1</h3>
+                        <ul>
+                            <li id="id">ID: {id}</li>
+                            <li id="user">Username: {user}</li>
+                        </ul>
+                    </div>
+                    <div
+                        class="item"
+                        id="keycard-2"
+                        onclick="openPanel('edit')"
+                    >
+                        <h3 id="name">Keycard 2</h3>
+                        <ul>
+                            <li id="id">ID: {id}</li>
+                            <li id="user">Username: {user}</li>
+                        </ul>
+                    </div>
+                    <div
+                        class="item"
+                        id="keycard-3"
+                        onclick="openPanel('edit')"
+                    >
+                        <h3 id="name">Keycard 3</h3>
+                        <ul>
+                            <li id="id">ID: {id}</li>
+                            <li id="user">Username: {user}</li>
+                        </ul>
+                    </div>
+
+                    <div class="item" id="create" onclick="openPanel('create')">
+                        <svg
+                            class="add-icon"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                        >
+                            <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                            <g
+                                id="SVGRepo_tracerCarrier"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                            ></g>
+                            <g id="SVGRepo_iconCarrier">
+                                <path
+                                    fill-rule="evenodd"
+                                    clip-rule="evenodd"
+                                    d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22ZM12.75 9C12.75 8.58579 12.4142 8.25 12 8.25C11.5858 8.25 11.25 8.58579 11.25 9L11.25 11.25H9C8.58579 11.25 8.25 11.5858 8.25 12C8.25 12.4142 8.58579 12.75 9 12.75H11.25V15C11.25 15.4142 11.5858 15.75 12 15.75C12.4142 15.75 12.75 15.4142 12.75 15L12.75 12.75H15C15.4142 12.75 15.75 12.4142 15.75 12C15.75 11.5858 15.4142 11.25 15 11.25H12.75V9Z"
+                                    fill="#ffffff"
+                                ></path>
+                            </g>
+                        </svg>
+                    </div>
+                </div>
+                <hr />
+
+                <h2 id="doors">Doors</h2>
+                <div class="data-grid">
+                    <div class="item" id="door-1" onclick="openPanel('edit')">
+                        <h3 id="name">Door 1</h3>
+                        <ul>
+                            <li id="ip">IP-address: {ip}</li>
+                            <li id="description">{description}</li>
+                        </ul>
+                    </div>
+                    <div class="item" id="door-2" onclick="openPanel('edit')">
+                        <h3 id="name">Door 2</h3>
+                        <ul>
+                            <li id="ip">IP-address: {ip}</li>
+                            <li id="description">{description}</li>
+                        </ul>
+                    </div>
+                    <div class="item" id="door-3" onclick="openPanel('edit')">
+                        <h3 id="name">Door 3</h3>
+                        <ul>
+                            <li id="ip">IP-address: {ip}</li>
+                            <li id="description">{description}</li>
+                        </ul>
+                    </div>
+
+                    <div class="item" id="create" onclick="openPanel('create')">
+                        <svg
+                            class="add-icon"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                        >
+                            <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                            <g
+                                id="SVGRepo_tracerCarrier"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                            ></g>
+                            <g id="SVGRepo_iconCarrier">
+                                <path
+                                    fill-rule="evenodd"
+                                    clip-rule="evenodd"
+                                    d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22ZM12.75 9C12.75 8.58579 12.4142 8.25 12 8.25C11.5858 8.25 11.25 8.58579 11.25 9L11.25 11.25H9C8.58579 11.25 8.25 11.5858 8.25 12C8.25 12.4142 8.58579 12.75 9 12.75H11.25V15C11.25 15.4142 11.5858 15.75 12 15.75C12.4142 15.75 12.75 15.4142 12.75 15L12.75 12.75H15C15.4142 12.75 15.75 12.4142 15.75 12C15.75 11.5858 15.4142 11.25 15 11.25H12.75V9Z"
+                                    fill="#ffffff"
+                                ></path>
+                            </g>
+                        </svg>
+                    </div>
+                </div>
+
+                <hr />
+                <h2 id="scanners">Scanners</h2>
+                <div class="data-grid">
+                    <div
+                        class="item"
+                        id="scanner-1"
+                        onclick="openPanel('edit')"
+                    >
+                        <h3 id="name">Scanner 1</h3>
+                        <ul>
+                            <li id="ip">IP-address: {ip}</li>
+                            <li id="description">{description}</li>
+                        </ul>
+                    </div>
+                    <div
+                        class="item"
+                        id="scanner-2"
+                        onclick="openPanel('edit')"
+                    >
+                        <h3 id="name">Scanner 2</h3>
+                        <ul>
+                            <li id="ip">IP-address: {ip}</li>
+                            <li id="description">{description}</li>
+                        </ul>
+                    </div>
+                    <div
+                        class="item"
+                        id="scanner-3"
+                        onclick="openPanel('edit')"
+                    >
+                        <h3 id="name">Scanner 3</h3>
+                        <ul>
+                            <li id="ip">IP-address: {ip}</li>
+                            <li id="description">{description}</li>
+                        </ul>
+                    </div>
+
+                    <div class="item" id="create" onclick="openPanel('create')">
+                        <svg
+                            class="add-icon"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                        >
+                            <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                            <g
+                                id="SVGRepo_tracerCarrier"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                            ></g>
+                            <g id="SVGRepo_iconCarrier">
+                                <path
+                                    fill-rule="evenodd"
+                                    clip-rule="evenodd"
+                                    d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22ZM12.75 9C12.75 8.58579 12.4142 8.25 12 8.25C11.5858 8.25 11.25 8.58579 11.25 9L11.25 11.25H9C8.58579 11.25 8.25 11.5858 8.25 12C8.25 12.4142 8.58579 12.75 9 12.75H11.25V15C11.25 15.4142 11.5858 15.75 12 15.75C12.4142 15.75 12.75 15.4142 12.75 15L12.75 12.75H15C15.4142 12.75 15.75 12.4142 15.75 12C15.75 11.5858 15.4142 11.25 15 11.25H12.75V9Z"
+                                    fill="#ffffff"
+                                ></path>
+                            </g>
+                        </svg>
+                    </div>
+                </div>
+                <hr />
+
+                <h2 id="users">Users</h2>
+                <div class="data-grid">
+                    <div class="item" id="user-1" onclick="openPanel('edit')">
+                        <h3 id="name">User 1</h3>
+                        <ul>
+                            <li id="firstname">Firstname: {firstname}</li>
+                            <li id="lastname">Lastname: {lastname}</li>
+                            <li id="email">Email: {email}</li>
+                            <li id="group">Group: {group}</li>
+                            <li id="creation">Creation date: {creation}</li>
+                        </ul>
+                    </div>
+                    <div class="item" id="user-2" onclick="openPanel('edit')">
+                        <h3 id="name">User 2</h3>
+                        <ul>
+                            <li id="firstname">Firstname: {firstname}</li>
+                            <li id="lastname">Lastname: {lastname}</li>
+                            <li id="email">Email: {email}</li>
+                            <li id="group">Group: {group}</li>
+                            <li id="creation">Creation date: {creation}</li>
+                        </ul>
+                    </div>
+                    <div class="item" id="user-3" onclick="openPanel('edit')">
+                        <h3 id="name">User 3</h3>
+                        <ul>
+                            <li id="firstname">Firstname: {firstname}</li>
+                            <li id="lastname">Lastname: {lastname}</li>
+                            <li id="email">Email: {email}</li>
+                            <li id="group">Group: {group}</li>
+                            <li id="creation">Creation date: {creation}</li>
+                        </ul>
+                    </div>
+
+                    <div class="item" id="create" onclick="openPanel('create')">
+                        <svg
+                            class="add-icon"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                        >
+                            <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                            <g
+                                id="SVGRepo_tracerCarrier"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                            ></g>
+                            <g id="SVGRepo_iconCarrier">
+                                <path
+                                    fill-rule="evenodd"
+                                    clip-rule="evenodd"
+                                    d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22ZM12.75 9C12.75 8.58579 12.4142 8.25 12 8.25C11.5858 8.25 11.25 8.58579 11.25 9L11.25 11.25H9C8.58579 11.25 8.25 11.5858 8.25 12C8.25 12.4142 8.58579 12.75 9 12.75H11.25V15C11.25 15.4142 11.5858 15.75 12 15.75C12.4142 15.75 12.75 15.4142 12.75 15L12.75 12.75H15C15.4142 12.75 15.75 12.4142 15.75 12C15.75 11.5858 15.4142 11.25 15 11.25H12.75V9Z"
+                                    fill="#ffffff"
+                                ></path>
+                            </g>
+                        </svg>
+                    </div>
+                </div>
+                <hr />
+
+                <h2 id="groups">Groups</h2>
+                <div class="data-grid">
+                    <div class="item" id="group-1" onclick="openPanel('edit')">
+                        <h3 id="name">Group 1</h3>
+                        <ul>
+                            <li id="groupname">Groupname: {groupname}</li>
+                            <li id="webaccess">Webpanel access: {webaccess}</li>
+                            <li id="scanneraccess">
+                                Scanner access: {scanneraccess}
+                            </li>
+                            <li id="writecards">
+                                Write cards access: {writecards}
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="item" id="group-2" onclick="openPanel('edit')">
+                        <h3 id="name">Group 2</h3>
+                        <ul>
+                            <li id="groupname">Groupname: {groupname}</li>
+                            <li id="webaccess">Webpanel access: {webaccess}</li>
+                            <li id="scanneraccess">
+                                Scanner access: {scanneraccess}
+                            </li>
+                            <li id="writecards">
+                                Write cards access: {writecards}
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="item" id="group-3" onclick="openPanel('edit')">
+                        <h3 id="name">Group 3</h3>
+                        <ul>
+                            <li id="groupname">Groupname: {groupname}</li>
+                            <li id="webaccess">Webpanel access: {webaccess}</li>
+                            <li id="scanneraccess">
+                                Scanner access: {scanneraccess}
+                            </li>
+                            <li id="writecards">
+                                Write cards access: {writecards}
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="item" id="create" onclick="openPanel('create')">
+                        <svg
+                            class="add-icon"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                        >
+                            <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                            <g
+                                id="SVGRepo_tracerCarrier"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                            ></g>
+                            <g id="SVGRepo_iconCarrier">
+                                <path
+                                    fill-rule="evenodd"
+                                    clip-rule="evenodd"
+                                    d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22ZM12.75 9C12.75 8.58579 12.4142 8.25 12 8.25C11.5858 8.25 11.25 8.58579 11.25 9L11.25 11.25H9C8.58579 11.25 8.25 11.5858 8.25 12C8.25 12.4142 8.58579 12.75 9 12.75H11.25V15C11.25 15.4142 11.5858 15.75 12 15.75C12.4142 15.75 12.75 15.4142 12.75 15L12.75 12.75H15C15.4142 12.75 15.75 12.4142 15.75 12C15.75 11.5858 15.4142 11.25 15 11.25H12.75V9Z"
+                                    fill="#ffffff"
+                                ></path>
+                            </g>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Edit Item Panel -->
+        <span id="edit-panel" class="hidden"></span>
+        <!-- Create Item Panel -->
+        <span id="create-panel" class="hidden"></span>
+
+        <!-- Theme Toggle -->
+        <span id="moon-toggle"> </span>
+        <span id="sun-toggle"> </span>
+        
+        <!-- Load Footer -->
+        <span id="footer"> </span>
+    </body>
+
+    <script src="/js/loadElements.js"></script>
+    <script src="/js/loadTheme.js"></script>
+    <script src="handlePanels.js"></script>
+</html>
