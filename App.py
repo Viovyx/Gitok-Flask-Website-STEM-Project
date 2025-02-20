@@ -19,8 +19,34 @@ socketio = SocketIO(app, cors_allowed_origins='*')
 
 
 @app.route('/')
-def homepage():
-    return("Hello World")
+def login():
+    return render_template('login.html')
+
+@app.route('/home', methods=['GET', 'POST'])
+def home():
+    return render_template('home.html')
+
+@app.route('/live-data')
+def live_data():
+    return render_template('live-data.html')
+
+@app.route('/log')
+def log():
+    return render_template('log.html')
+
+@app.route('/account', methods=['GET', 'POST'])
+def account():
+    return render_template('account.html')
+
+# Needed to make loadElement.js work with flask
+@app.route('/get_element/<element_id>')
+def get_element(element_id):
+    try:
+        with open(f'templates/elements/{element_id}.html') as file:
+            html_content = file.read()
+        return html_content
+    except FileNotFoundError:
+        return f"Error: {element_id}.html not found", 404
 
 @mqtt.on_connect()
 def handle_connect(client, userdata, flags, rc):

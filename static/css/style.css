@@ -1,8 +1,8 @@
 /* --- Fonts --- */
-@import url("/styling/fonts.css");
+@import url("/static/css/fonts.css");
 
 /* --- Colors --- */
-@import url("/styling/colors.css");
+@import url("/static/css/colors.css");
 
 /* --- Global Styles --- */
 * {
