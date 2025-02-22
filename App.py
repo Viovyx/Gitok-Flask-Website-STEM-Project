@@ -3,6 +3,7 @@ eventlet.monkey_patch()
 from flask import Flask, render_template, request
 from flask_mqtt import Mqtt
 from flask_socketio import SocketIO
+from datetime import datetime
 
 
 app = Flask(__name__)
@@ -17,6 +18,9 @@ app.config['SECRET_KEY'] = 'secret!'
 mqtt = Mqtt(app)
 socketio = SocketIO(app, cors_allowed_origins='*')
 
+def get_date():
+    now = datetime.now()
+    return now.strftime("%m/%d/%Y %H:%M")  # Remove H & M after testing!
 
 @app.route('/')
 def login():
@@ -52,11 +56,14 @@ def get_element(element_id):
 def handle_connect(client, userdata, flags, rc):
     print('MQTT Connected')
     # Handle subscription here
+    mqtt.subscribe("Tapgate/feeds/scanner.action")
 
 @mqtt.on_message()
 def handle_mqtt_message(client, userdata, message):
-    print(message.payload.decode())
+    print(message.topic, message.payload.decode())
     # Handle received message here
+    if (message.topic == "Tapgate/feeds/scanner.action"):
+        socketio.emit("updateSensorGraph", {"value": message.payload.decode(), "date": get_date()})
 
 @socketio.on('connect')
 def connect():
