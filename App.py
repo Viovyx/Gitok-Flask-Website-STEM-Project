@@ -3,7 +3,7 @@ eventlet.monkey_patch()
 from flask import Flask, render_template, request
 from flask_mqtt import Mqtt
 from flask_socketio import SocketIO
-from datetime import datetime
+from datetime import datetime, timezone
 
 
 app = Flask(__name__)
@@ -19,8 +19,8 @@ mqtt = Mqtt(app)
 socketio = SocketIO(app, cors_allowed_origins='*')
 
 def get_date():
-    now = datetime.now()
-    return now.strftime("%m/%d/%Y %H:%M")  # Remove H & M after testing!
+    now = datetime.now(timezone.utc)
+    return now.strftime("%m/%d/%Y %H:%M UTC")  # Remove time after testing!
 
 @app.route('/')
 def login():
