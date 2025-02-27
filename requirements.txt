@@ -6,3 +6,4 @@ flask_bootstrap
 flask_login
 requests
 Bcrypt-Flask
+python-dotenv

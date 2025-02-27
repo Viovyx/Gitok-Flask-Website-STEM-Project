@@ -1,6 +1,7 @@
 import eventlet
 eventlet.monkey_patch()
 import os, flask_login, requests
+from dotenv import load_dotenv
 from flask import Flask, render_template, request, redirect
 from flask_mqtt import Mqtt
 from flask_socketio import SocketIO
@@ -13,6 +14,7 @@ from datetime import datetime, timezone
 # ---------------
 app = Flask(__name__)
 
+load_dotenv()
 app.config['MQTT_BROKER_URL'] = os.getenv('MQTT_BROKER_URL')
 app.config['MQTT_BROKER_PORT'] = int(os.getenv('MQTT_BROKER_PORT'))
 app.config['MQTT_USERNAME'] = os.getenv('MQTT_USERNAME')
