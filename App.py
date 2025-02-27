@@ -69,6 +69,8 @@ def get_date():
 @app.route('/', methods=['GET', 'POST'])
 def login():
     if request.method == 'GET':
+        if flask_login.current_user.is_authenticated:
+            return redirect('/home')
         return render_template('login.html')
     
     email = request.form['email']
