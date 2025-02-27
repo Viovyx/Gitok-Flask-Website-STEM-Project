@@ -6,6 +6,10 @@ from flask_mqtt import Mqtt
 from flask_socketio import SocketIO
 from datetime import datetime, timezone
 
+
+# ---------------
+# Setup & Config
+# ---------------
 app = Flask(__name__)
 
 app.config['MQTT_BROKER_URL'] = os.getenv('MQTT_BROKER_URL')
@@ -15,17 +19,22 @@ app.config['MQTT_PASSWORD'] = os.getenv('MQTT_PASSWORD')
 app.config['MQTT_KEEPALIVE'] = int(os.getenv('MQTT_KEEPALIVE'))
 app.config['MQTT_TLS_ENABLED'] = False
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
+
 headers = {"X-API-KEY":os.getenv('API_KEY')}
 api_base_url = "https://api.tapgate.tech/api.php/records/"
+
 mqtt = Mqtt(app)
 socketio = SocketIO(app, cors_allowed_origins='*')
+
 login_manager = flask_login.LoginManager()
 login_manager.init_app(app)
 
 
+# ------------
+# Flask Login
+# ------------
 class User(flask_login.UserMixin):
     pass
-
 
 @login_manager.user_loader
 def user_loader(email):
@@ -39,7 +48,6 @@ def user_loader(email):
     user = User()
     user.id = email
     return user
-
 
 @login_manager.request_loader
 def request_loader(request):
@@ -62,10 +70,18 @@ def request_loader(request):
 def unauthorized_handler():
     return redirect('/')
 
+
+# ----------
+# Helper Functions
+# ----------
 def get_date():
     now = datetime.now(timezone.utc)
     return now.strftime("%m/%d/%Y %H:%M UTC")  # Remove time after testing!
 
+
+# -------
+# Routes
+# -------
 @app.route('/', methods=['GET', 'POST'])
 def login():
     if request.method == 'GET':
@@ -122,6 +138,10 @@ def get_element(element_id):
     except FileNotFoundError:
         return f"Error: {element_id}.html not found", 404
 
+
+# ------------------
+# MQTT and SocketIO
+# ------------------
 @mqtt.on_connect()
 def handle_connect(client, userdata, flags, rc):
     print('MQTT Connected')
@@ -144,5 +164,9 @@ def connect():
 def disconnect():
     print('Client disconnected',  request.sid)
 
+
+# --------
+# Run App
+# --------
 if __name__ == "__main__":
     socketio.run(app, host="0.0.0.0", debug=True, use_reloader=False)
