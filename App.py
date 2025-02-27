@@ -1,4 +1,4 @@
-import eventlet
+import eventlet, os
 eventlet.monkey_patch()
 from flask import Flask, render_template, request
 from flask_mqtt import Mqtt
@@ -8,13 +8,13 @@ from datetime import datetime, timezone
 
 app = Flask(__name__)
 
-app.config['MQTT_BROKER_URL'] = 'io.adafruit.com'
-app.config['MQTT_BROKER_PORT'] = 1883
-app.config['MQTT_USERNAME'] = 'Tapgate'
-app.config['MQTT_PASSWORD'] = 'aio_SVVQ61HhuAzANAn0gjaTixoF0KMy'
-app.config['MQTT_KEEPALIVE'] = 5
+app.config['MQTT_BROKER_URL'] = os.getenv('MQTT_BROKER_URL')
+app.config['MQTT_BROKER_PORT'] = int(os.getenv('MQTT_BROKER_PORT'))
+app.config['MQTT_USERNAME'] = os.getenv('MQTT_USERNAME')
+app.config['MQTT_PASSWORD'] = os.getenv('MQTT_PASSWORD')
+app.config['MQTT_KEEPALIVE'] = int(os.getenv('MQTT_KEEPALIVE'))
 app.config['MQTT_TLS_ENABLED'] = False
-app.config['SECRET_KEY'] = 'secret!'
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 mqtt = Mqtt(app)
 socketio = SocketIO(app, cors_allowed_origins='*')
 
@@ -22,11 +22,11 @@ def get_date():
     now = datetime.now(timezone.utc)
     return now.strftime("%m/%d/%Y %H:%M UTC")  # Remove time after testing!
 
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 def login():
     return render_template('login.html')
 
-@app.route('/home', methods=['GET', 'POST'])
+@app.route('/home')
 def home():
     return render_template('home.html')
 
