@@ -15,7 +15,7 @@ app.config['MQTT_PASSWORD'] = os.getenv('MQTT_PASSWORD')
 app.config['MQTT_KEEPALIVE'] = int(os.getenv('MQTT_KEEPALIVE'))
 app.config['MQTT_TLS_ENABLED'] = False
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
-headers = {"X-API-KEY":os.getenv('X-API-KEY')}
+headers = {"X-API-KEY":os.getenv('API_KEY')}
 api_base_url = "https://api.tapgate.tech/api.php/records/"
 mqtt = Mqtt(app)
 socketio = SocketIO(app, cors_allowed_origins='*')
@@ -30,7 +30,8 @@ class User(flask_login.UserMixin):
 @login_manager.user_loader
 def user_loader(email):
     api_url = api_base_url + f"users?filter=Email,eq,{email}"
-    response = requests.get(api_url, headers=headers)['records']
+    response = requests.get(api_url, headers=headers)
+    response = response.json()['records']
 
     if len(response) == 0:
         return
@@ -43,8 +44,12 @@ def user_loader(email):
 @login_manager.request_loader
 def request_loader(request):
     email = request.form.get('email')
+    if email == None:
+        return
+
     api_url = api_base_url + f"users?filter=Email,eq,{email}"
-    response = requests.get(api_url, headers=headers)['records']
+    response = requests.get(api_url, headers=headers)
+    response = response.json()['records']
 
     if len(response) == 0:
         return
@@ -68,16 +73,17 @@ def login():
     
     email = request.form['email']
     api_url = api_base_url + f"users?filter=Email,eq,{email}"
-    response = requests.get(api_url, headers=headers)['records']
-    user = response[0]
+    response = requests.get(api_url, headers=headers)
+    response = response.json()['records']
 
-    if len(response) == 0 and request.form['password'] == ['Password']:
-        user = User()
-        user.id = email
-        flask_login.login_user(user)
-        return redirect('/home')
+    if len(response) != 0:
+        if request.form['password'] == response[0]['Password']:
+            user = User()
+            user.id = email
+            flask_login.login_user(user)
+            return redirect('/home')
 
-    return 'Bad login'
+    return 'Bad login'  # redirect to login with error param (js error handling)
 
 @app.route('/home')
 @flask_login.login_required
