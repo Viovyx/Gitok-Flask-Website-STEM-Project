@@ -83,7 +83,7 @@ def login():
             flask_login.login_user(user)
             return redirect('/home')
 
-    return 'Bad login'  # redirect to login with error param (js error handling)
+    return redirect('/?error=bad_login')
 
 @app.route('/home')
 @flask_login.login_required
