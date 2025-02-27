@@ -4,6 +4,7 @@ import os, flask_login, requests
 from flask import Flask, render_template, request, redirect
 from flask_mqtt import Mqtt
 from flask_socketio import SocketIO
+from flask_bcrypt import Bcrypt
 from datetime import datetime, timezone
 
 
@@ -28,6 +29,7 @@ socketio = SocketIO(app, cors_allowed_origins='*')
 
 login_manager = flask_login.LoginManager()
 login_manager.init_app(app)
+bcrypt = Bcrypt(app)
 
 
 # ------------
@@ -71,9 +73,9 @@ def unauthorized_handler():
     return redirect('/')
 
 
-# ----------
+# -----------------
 # Helper Functions
-# ----------
+# -----------------
 def get_date():
     now = datetime.now(timezone.utc)
     return now.strftime("%m/%d/%Y %H:%M UTC")  # Remove time after testing!
@@ -95,7 +97,7 @@ def login():
     response = response.json()['records']
 
     if len(response) != 0:
-        if request.form['password'] == response[0]['Password']:
+        if bcrypt.check_password_hash(response[0]['Password'], request.form['password']):
             user = User()
             user.id = email
             flask_login.login_user(user)
