@@ -34,6 +34,20 @@ login_manager.init_app(app)
 bcrypt = Bcrypt(app)
 
 
+# -----------------
+# Helper Functions
+# -----------------
+def get_date():
+    now = datetime.now(timezone.utc)
+    return now.strftime("%m/%d/%Y %H:%M UTC")  # Remove time after testing!
+
+def get_user_data(email):
+    api_url = api_base_url + f"users?filter=Email,eq,{email}"
+    response = requests.get(api_url, headers=headers)
+    response = response.json()['records']
+    return response
+
+
 # ------------
 # Flask Login
 # ------------
@@ -42,11 +56,7 @@ class User(flask_login.UserMixin):
 
 @login_manager.user_loader
 def user_loader(email):
-    api_url = api_base_url + f"users?filter=Email,eq,{email}"
-    response = requests.get(api_url, headers=headers)
-    response = response.json()['records']
-
-    if len(response) == 0:
+    if len(get_user_data(email)) == 0:
         return
 
     user = User()
@@ -59,11 +69,7 @@ def request_loader(request):
     if email == None:
         return
 
-    api_url = api_base_url + f"users?filter=Email,eq,{email}"
-    response = requests.get(api_url, headers=headers)
-    response = response.json()['records']
-
-    if len(response) == 0:
+    if len(get_user_data(email)) == 0:
         return
 
     user = User()
@@ -73,14 +79,6 @@ def request_loader(request):
 @login_manager.unauthorized_handler
 def unauthorized_handler():
     return redirect('/')
-
-
-# -----------------
-# Helper Functions
-# -----------------
-def get_date():
-    now = datetime.now(timezone.utc)
-    return now.strftime("%m/%d/%Y %H:%M UTC")  # Remove time after testing!
 
 
 # -------
@@ -94,12 +92,10 @@ def login():
         return render_template('login.html')
     
     email = request.form['email']
-    api_url = api_base_url + f"users?filter=Email,eq,{email}"
-    response = requests.get(api_url, headers=headers)
-    response = response.json()['records']
+    user_data = get_user_data(email)
 
-    if len(response) != 0:
-        if bcrypt.check_password_hash(response[0]['Password'], request.form['password']):
+    if len(user_data) != 0:
+        if bcrypt.check_password_hash(user_data[0]['Password'], request.form['password']):
             user = User()
             user.id = email
             flask_login.login_user(user)
