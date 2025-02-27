@@ -3,3 +3,5 @@ eventlet
 flask_mqtt
 flask_socketio
 flask_bootstrap
+flask_login
+requests

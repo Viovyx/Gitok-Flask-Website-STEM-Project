@@ -1,10 +1,10 @@
-import eventlet, os
+import eventlet
 eventlet.monkey_patch()
-from flask import Flask, render_template, request
+import os, flask_login, requests
+from flask import Flask, render_template, request, redirect
 from flask_mqtt import Mqtt
 from flask_socketio import SocketIO
 from datetime import datetime, timezone
-
 
 app = Flask(__name__)
 
@@ -15,8 +15,47 @@ app.config['MQTT_PASSWORD'] = os.getenv('MQTT_PASSWORD')
 app.config['MQTT_KEEPALIVE'] = int(os.getenv('MQTT_KEEPALIVE'))
 app.config['MQTT_TLS_ENABLED'] = False
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
+headers = {"X-API-KEY":os.getenv('X-API-KEY')}
+api_base_url = "https://api.tapgate.tech/api.php/records/"
 mqtt = Mqtt(app)
 socketio = SocketIO(app, cors_allowed_origins='*')
+login_manager = flask_login.LoginManager()
+login_manager.init_app(app)
+
+
+class User(flask_login.UserMixin):
+    pass
+
+
+@login_manager.user_loader
+def user_loader(email):
+    api_url = api_base_url + f"users?filter=Email,eq,{email}"
+    response = requests.get(api_url, headers=headers)['records']
+
+    if len(response) == 0:
+        return
+
+    user = User()
+    user.id = email
+    return user
+
+
+@login_manager.request_loader
+def request_loader(request):
+    email = request.form.get('email')
+    api_url = api_base_url + f"users?filter=Email,eq,{email}"
+    response = requests.get(api_url, headers=headers)['records']
+
+    if len(response) == 0:
+        return
+
+    user = User()
+    user.id = email
+    return user
+
+@login_manager.unauthorized_handler
+def unauthorized_handler():
+    return redirect('/')
 
 def get_date():
     now = datetime.now(timezone.utc)
@@ -24,23 +63,46 @@ def get_date():
 
 @app.route('/', methods=['GET', 'POST'])
 def login():
-    return render_template('login.html')
+    if request.method == 'GET':
+        return render_template('login.html')
+    
+    email = request.form['email']
+    api_url = api_base_url + f"users?filter=Email,eq,{email}"
+    response = requests.get(api_url, headers=headers)['records']
+    user = response[0]
+
+    if len(response) == 0 and request.form['password'] == ['Password']:
+        user = User()
+        user.id = email
+        flask_login.login_user(user)
+        return redirect('/home')
+
+    return 'Bad login'
 
 @app.route('/home')
+@flask_login.login_required
 def home():
     return render_template('home.html')
 
 @app.route('/live-data')
+@flask_login.login_required
 def live_data():
     return render_template('live-data.html')
 
 @app.route('/log')
+@flask_login.login_required
 def log():
     return render_template('log.html')
 
 @app.route('/account', methods=['GET', 'POST'])
+@flask_login.login_required
 def account():
     return render_template('account.html')
+
+@app.route('/logout')
+def logout():
+    flask_login.logout_user()
+    return redirect('/')
 
 # Needed to make loadElement.js work with flask
 @app.route('/get_element/<element_id>')
