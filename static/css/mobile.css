@@ -57,3 +57,11 @@
   justify-content: center;
   padding-right: 2rem;
 }
+
+.account-wrapper > form {
+  max-width: 100%;
+}
+
+.edit-panel .panel-wrapper {
+  margin: 0 5vw;
+}
