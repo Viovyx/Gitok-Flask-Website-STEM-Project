@@ -112,8 +112,9 @@ def login():
 @app.route('/home')
 @flask_login.login_required
 def home():
+    user = get_user_data(flask_login.current_user.id)[0]
     return render_template('home.html', 
-                           firstname=get_user_data(flask_login.current_user.id)[0]['FirstName'],
+                           name=f"{user['FirstName']} {user['LastName']}",
                            keycards=get_tabel_data("cards"),
                            devices=get_tabel_data("devices"),
                            users=get_tabel_data("users"),
