@@ -120,7 +120,15 @@ function removeFirstData() {
 const MAX_DATA_COUNT = 7;
 
 //connect to the socket server.
-const socket = io();
+const socket = io.connect();
+
+socket.on("connect", () => {
+  console.log("Connected to SocketIO server");
+});
+
+socket.on("disconnect", () => {
+  console.log("Disconnected from server");
+});
 
 //receive details from server
 socket.on("updateSensorGraph", function (msg) {
