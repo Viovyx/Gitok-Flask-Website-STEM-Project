@@ -155,7 +155,7 @@ h2 {
     align-items: center;
     height: fit-content;
     margin-top: auto;
-    padding: 1rem 2rem;
+    padding: 0.5rem 2rem;
     background-color: var(--primary);
     color: var(--primary-content);
     padding-right: 4rem;
@@ -339,7 +339,7 @@ form button:active {
     height: auto;
     cursor: pointer;
     position: fixed;
-    bottom: 0.9em;
+    bottom: 0.5em;
     right: 1em;
 }
 
