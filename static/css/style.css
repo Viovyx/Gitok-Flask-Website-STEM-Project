@@ -143,12 +143,17 @@ h2 {
     fill: var(--secondary-content);
 }
 
+.hamburger-menu {
+    display: none;
+    cursor: pointer;
+}
+
 /* --- Footer --- */
 .footer {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    height: 3em;
+    height: fit-content;
     margin-top: auto;
     padding: 1rem 2rem;
     background-color: var(--primary);
@@ -333,8 +338,8 @@ form button:active {
     width: 30px;
     height: auto;
     cursor: pointer;
-    position: absolute;
-    bottom: 0.5em;
+    position: fixed;
+    bottom: 0.9em;
     right: 1em;
 }
 

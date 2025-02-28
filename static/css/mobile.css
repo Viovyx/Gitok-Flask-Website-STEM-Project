@@ -1,0 +1,59 @@
+/* --- Fonts --- */
+@import url("/static/css/fonts.css");
+
+/* --- Colors --- */
+@import url("/static/css/colors.css");
+
+/* --- Main --- */
+.page-wrapper {
+  grid-template-columns: 1fr;
+}
+
+.sidebar {
+  display: none;
+}
+
+.page-content {
+  max-height: 70vh;
+}
+
+.header-nav {
+  display: none;
+}
+
+.hamburger-menu {
+  display: block;
+  position: absolute;
+  top: 1.3rem;
+  right: 1rem;
+  z-index: 200;
+}
+
+.header-nav.active {
+  display: flex;
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 100;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(var(--background-rgb), 0.5);
+  gap: 1rem;
+  backdrop-filter: blur(5px);
+}
+
+.header-nav.active a {
+  width: 50%;
+  text-align: center;
+}
+
+.footer {
+  flex-direction: column;
+  height: fit-content;
+  gap: 1rem;
+  justify-content: center;
+  padding-right: 2rem;
+}
