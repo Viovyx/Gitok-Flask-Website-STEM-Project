@@ -38,7 +38,7 @@
             <div class="page-content">
                 <h1>
                     Welcome to the TapGate admin panel
-                    <b id="username">{user}</b>!
+                    <b id="username">{{firstname}}</b>!
                 </h1>
                 <p class="subscript">
                     Manage your doors and scanners with ease.
@@ -47,39 +47,20 @@
 
                 <h2 id="keycards">Keycards</h2>
                 <div class="data-grid">
+                    {% for keycard in keycards %}
                     <div
                         class="item"
-                        id="keycard-1"
+                        id="keycard-{{ keycard.id }}"
                         onclick="openPanel('edit')"
                     >
-                        <h3 id="name">Keycard 1</h3>
+                        <h3 id="name">CardUID: {{ keycard.CardUID }}</h3>
                         <ul>
-                            <li id="id">ID: {id}</li>
-                            <li id="user">Username: {user}</li>
+                            <li id="id">ID: {{ keycard.id }}</li>
+                            <li id="pass">UniquePass: {{ keycard.UniquePass }}</li>
+                            <li id="user">User_id: {{ keycard.User_id }}</li>
                         </ul>
                     </div>
-                    <div
-                        class="item"
-                        id="keycard-2"
-                        onclick="openPanel('edit')"
-                    >
-                        <h3 id="name">Keycard 2</h3>
-                        <ul>
-                            <li id="id">ID: {id}</li>
-                            <li id="user">Username: {user}</li>
-                        </ul>
-                    </div>
-                    <div
-                        class="item"
-                        id="keycard-3"
-                        onclick="openPanel('edit')"
-                    >
-                        <h3 id="name">Keycard 3</h3>
-                        <ul>
-                            <li id="id">ID: {id}</li>
-                            <li id="user">Username: {user}</li>
-                        </ul>
-                    </div>
+                    {% endfor %}
 
                     <div class="item" id="create" onclick="openPanel('create')">
                         <svg
@@ -109,27 +90,21 @@
 
                 <h2 id="doors">Doors</h2>
                 <div class="data-grid">
-                    <div class="item" id="door-1" onclick="openPanel('edit')">
-                        <h3 id="name">Door 1</h3>
-                        <ul>
-                            <li id="ip">IP-address: {ip}</li>
-                            <li id="description">{description}</li>
-                        </ul>
-                    </div>
-                    <div class="item" id="door-2" onclick="openPanel('edit')">
-                        <h3 id="name">Door 2</h3>
-                        <ul>
-                            <li id="ip">IP-address: {ip}</li>
-                            <li id="description">{description}</li>
-                        </ul>
-                    </div>
-                    <div class="item" id="door-3" onclick="openPanel('edit')">
-                        <h3 id="name">Door 3</h3>
-                        <ul>
-                            <li id="ip">IP-address: {ip}</li>
-                            <li id="description">{description}</li>
-                        </ul>
-                    </div>
+                    {% for door in devices %}
+                        {% if door.Type == "lock" %}
+                            <div
+                                class="item"
+                                id="door-{{ door.id }}"
+                                onclick="openPanel('edit')"
+                            >
+                                <h3 id="name">Name: {{ door.Name }}</h3>
+                                <ul>
+                                    <li id="id">ID: {{ door.id }}</li>
+                                    <li id="ip">Local_IP: {{ door.Local_IP }}</li>
+                                </ul>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
 
                     <div class="item" id="create" onclick="openPanel('create')">
                         <svg
@@ -159,39 +134,21 @@
                 <hr />
                 <h2 id="scanners">Scanners</h2>
                 <div class="data-grid">
-                    <div
-                        class="item"
-                        id="scanner-1"
-                        onclick="openPanel('edit')"
-                    >
-                        <h3 id="name">Scanner 1</h3>
-                        <ul>
-                            <li id="ip">IP-address: {ip}</li>
-                            <li id="description">{description}</li>
-                        </ul>
-                    </div>
-                    <div
-                        class="item"
-                        id="scanner-2"
-                        onclick="openPanel('edit')"
-                    >
-                        <h3 id="name">Scanner 2</h3>
-                        <ul>
-                            <li id="ip">IP-address: {ip}</li>
-                            <li id="description">{description}</li>
-                        </ul>
-                    </div>
-                    <div
-                        class="item"
-                        id="scanner-3"
-                        onclick="openPanel('edit')"
-                    >
-                        <h3 id="name">Scanner 3</h3>
-                        <ul>
-                            <li id="ip">IP-address: {ip}</li>
-                            <li id="description">{description}</li>
-                        </ul>
-                    </div>
+                    {% for scanner in devices %}
+                        {% if scanner.Type == "scanner" %}
+                            <div
+                                class="item"
+                                id="scanner-{{ scanner.id }}"
+                                onclick="openPanel('edit')"
+                            >
+                                <h3 id="name">Name: {{ scanner.Name }}</h3>
+                                <ul>
+                                    <li id="id">ID: {{ scanner.id }}</li>
+                                    <li id="ip">Local_IP: {{ scanner.Local_IP }}</li>
+                                </ul>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
 
                     <div class="item" id="create" onclick="openPanel('create')">
                         <svg
@@ -221,36 +178,21 @@
 
                 <h2 id="users">Users</h2>
                 <div class="data-grid">
-                    <div class="item" id="user-1" onclick="openPanel('edit')">
-                        <h3 id="name">User 1</h3>
+                    {% for user in users %}
+                    <div
+                        class="item"
+                        id="user-{{ user.id }}"
+                        onclick="openPanel('edit')"
+                    >
+                        <h3 id="name">Name: {{ user.FirstName }} {{ user.LastName }}</h3>
                         <ul>
-                            <li id="firstname">Firstname: {firstname}</li>
-                            <li id="lastname">Lastname: {lastname}</li>
-                            <li id="email">Email: {email}</li>
-                            <li id="group">Group: {group}</li>
-                            <li id="creation">Creation date: {creation}</li>
+                            <li id="id">ID: {{ user.id }}</li>
+                            <li id="email">Email: {{ user.Email }}</li>
+                            <li id="pass">Password: (Encrypted)</li>
+                            <li id="group">Group_id: {{ user.Group_id }}</li>
                         </ul>
                     </div>
-                    <div class="item" id="user-2" onclick="openPanel('edit')">
-                        <h3 id="name">User 2</h3>
-                        <ul>
-                            <li id="firstname">Firstname: {firstname}</li>
-                            <li id="lastname">Lastname: {lastname}</li>
-                            <li id="email">Email: {email}</li>
-                            <li id="group">Group: {group}</li>
-                            <li id="creation">Creation date: {creation}</li>
-                        </ul>
-                    </div>
-                    <div class="item" id="user-3" onclick="openPanel('edit')">
-                        <h3 id="name">User 3</h3>
-                        <ul>
-                            <li id="firstname">Firstname: {firstname}</li>
-                            <li id="lastname">Lastname: {lastname}</li>
-                            <li id="email">Email: {email}</li>
-                            <li id="group">Group: {group}</li>
-                            <li id="creation">Creation date: {creation}</li>
-                        </ul>
-                    </div>
+                    {% endfor %}
 
                     <div class="item" id="create" onclick="openPanel('create')">
                         <svg
@@ -280,45 +222,20 @@
 
                 <h2 id="groups">Groups</h2>
                 <div class="data-grid">
-                    <div class="item" id="group-1" onclick="openPanel('edit')">
-                        <h3 id="name">Group 1</h3>
+                    {% for group in groups %}
+                    <div
+                        class="item"
+                        id="group-{{ group.id }}"
+                        onclick="openPanel('edit')"
+                    >
+                        <h3 id="name">Name: {{ group.Groupname }}</h3>
                         <ul>
-                            <li id="groupname">Groupname: {groupname}</li>
-                            <li id="webaccess">Webpanel access: {webaccess}</li>
-                            <li id="scanneraccess">
-                                Scanner access: {scanneraccess}
-                            </li>
-                            <li id="writecards">
-                                Write cards access: {writecards}
-                            </li>
+                            <li id="id">ID: {{ group.id }}</li>
+                            <li id="admin">Admin: {{ group.Admin }}</li>
+                            <li id="access">Accesslevel: {{ group.Access }}</li>
                         </ul>
                     </div>
-                    <div class="item" id="group-2" onclick="openPanel('edit')">
-                        <h3 id="name">Group 2</h3>
-                        <ul>
-                            <li id="groupname">Groupname: {groupname}</li>
-                            <li id="webaccess">Webpanel access: {webaccess}</li>
-                            <li id="scanneraccess">
-                                Scanner access: {scanneraccess}
-                            </li>
-                            <li id="writecards">
-                                Write cards access: {writecards}
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="item" id="group-3" onclick="openPanel('edit')">
-                        <h3 id="name">Group 3</h3>
-                        <ul>
-                            <li id="groupname">Groupname: {groupname}</li>
-                            <li id="webaccess">Webpanel access: {webaccess}</li>
-                            <li id="scanneraccess">
-                                Scanner access: {scanneraccess}
-                            </li>
-                            <li id="writecards">
-                                Write cards access: {writecards}
-                            </li>
-                        </ul>
-                    </div>
+                    {% endfor %}
 
                     <div class="item" id="create" onclick="openPanel('create')">
                         <svg

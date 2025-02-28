@@ -47,6 +47,12 @@ def get_user_data(email):
     response = response.json()['records']
     return response
 
+def get_tabel_data(table):
+    api_url = api_base_url + f"{table}"
+    response = requests.get(api_url, headers=headers)
+    response = response.json()['records']
+    return response
+
 
 # ------------
 # Flask Login
@@ -106,7 +112,12 @@ def login():
 @app.route('/home')
 @flask_login.login_required
 def home():
-    return render_template('home.html')
+    return render_template('home.html', 
+                           firstname=get_user_data(flask_login.current_user.id)[0]['FirstName'],
+                           keycards=get_tabel_data("cards"),
+                           devices=get_tabel_data("devices"),
+                           users=get_tabel_data("users"),
+                           groups=get_tabel_data("groups"))
 
 @app.route('/live-data')
 @flask_login.login_required
