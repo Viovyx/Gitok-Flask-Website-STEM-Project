@@ -25,41 +25,17 @@
                 <hr />
                 <table class="log-table" id="log-table">
                     <tr>
-                        <th>Event</th>
+                        <th>Action</th>
                         <th>Details</th>
                         <th>Time</th>
                     </tr>
-                    <!-- Placeholder Data -->
-                    <tr>
-                        <td>Event</td>
-                        <td>Details</td>
-                        <td>2021-01-01 00:00:00</td>
-                    </tr>
-                    <tr>
-                        <td>Event</td>
-                        <td>Details</td>
-                        <td>2021-01-01 00:00:00</td>
-                    </tr>
-                    <tr>
-                        <td>Event</td>
-                        <td>Details</td>
-                        <td>2021-01-01 00:00:00</td>
-                    </tr>
-                    <tr>
-                        <td>Event</td>
-                        <td>Details</td>
-                        <td>2021-01-01 00:00:00</td>
-                    </tr>
-                    <tr>
-                        <td>Event</td>
-                        <td>Details</td>
-                        <td>2021-01-01 00:00:00</td>
-                    </tr>
-                    <tr>
-                        <td>Event</td>
-                        <td>Details</td>
-                        <td>2021-01-01 00:00:00</td>
-                    </tr>
+                    {% for log in logs %}
+                        <tr>
+                            <td>{{ log.Action }}</td>
+                            <td>{{ "Success" if log.Success else "Failed" }}: {{ log.Description }}</td>
+                            <td>{{ log.Time }}</td>
+                        </tr>
+                    {% endfor %}
                 </table>
             </div>
         </div>

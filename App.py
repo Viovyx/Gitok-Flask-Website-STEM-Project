@@ -127,7 +127,8 @@ def live_data():
 @app.route('/log')
 @flask_login.login_required
 def log():
-    return render_template('log.html')
+    return render_template('log.html',
+                           logs=get_tabel_data("logs"))
 
 @app.route('/account', methods=['GET', 'POST'])
 @flask_login.login_required
