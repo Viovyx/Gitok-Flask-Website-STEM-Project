@@ -1,4 +1,4 @@
-# Flask Gitok Website 6DSIC STEM Project
+# Gitok Flask Website 6DSIC STEM Project
 Rewrite of [old version](https://github.com/Viovyx/Gitok-Website-6DSIC-STEM-Project) to work with Python Flask.
 
 ## Resources:
