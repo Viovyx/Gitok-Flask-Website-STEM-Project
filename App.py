@@ -37,6 +37,14 @@ bcrypt = Bcrypt(app)
 # -----------------
 # Helper Functions
 # -----------------
+def get_element(element_id):
+    try:
+        with open(f'templates/elements/{element_id}.html') as file:
+            html_content = file.read()
+        return html_content
+    except FileNotFoundError:
+        return f"Error: {element_id}.html not found", 404
+
 def get_date():
     now = datetime.now(timezone.utc)
     return now.strftime("%m/%d/%Y %H:%M UTC")  # Remove time after testing!
@@ -95,7 +103,10 @@ def login():
     if request.method == 'GET':
         if flask_login.current_user.is_authenticated:
             return redirect('/home')
-        return render_template('login.html')
+        return render_template('login.html',
+                                footer=get_element("footer"),
+                                moon_toggle=get_element("moon-toggle"),
+                                sun_toggle=get_element("sun-toggle"))
     
     email = request.form['email']
     user_data = get_user_data(email)
@@ -114,42 +125,50 @@ def login():
 def home():
     user = get_user_data(flask_login.current_user.id)[0]
     return render_template('home.html', 
-                           name=f"{user['FirstName']} {user['LastName']}",
-                           keycards=get_tabel_data("cards"),
-                           devices=get_tabel_data("devices"),
-                           users=get_tabel_data("users"),
-                           groups=get_tabel_data("groups"))
+                            header=get_element("header"),
+                            footer=get_element("footer"),
+                            moon_toggle=get_element("moon-toggle"),
+                            sun_toggle=get_element("sun-toggle"),
+                            edit_panel=get_element("edit-panel"),
+                            create_panel=get_element("create-panel"),
+                            name=f"{user['FirstName']} {user['LastName']}",
+                            keycards=get_tabel_data("cards"),
+                            devices=get_tabel_data("devices"),
+                            users=get_tabel_data("users"),
+                            groups=get_tabel_data("groups"))
 
 @app.route('/live-data')
 @flask_login.login_required
 def live_data():
-    return render_template('live-data.html')
+    return render_template('live-data.html',
+                            header=get_element("header"),
+                            footer=get_element("footer"),
+                            moon_toggle=get_element("moon-toggle"),
+                            sun_toggle=get_element("sun-toggle"))
 
 @app.route('/log')
 @flask_login.login_required
 def log():
     return render_template('log.html',
-                           logs=get_tabel_data("logs"))
+                            header=get_element("header"),
+                            footer=get_element("footer"),
+                            moon_toggle=get_element("moon-toggle"),
+                            sun_toggle=get_element("sun-toggle"),
+                            logs=get_tabel_data("logs"))
 
 @app.route('/account', methods=['GET', 'POST'])
 @flask_login.login_required
 def account():
-    return render_template('account.html')
+    return render_template('account.html',
+                            header=get_element("header"),
+                            footer=get_element("footer"),
+                            moon_toggle=get_element("moon-toggle"),
+                            sun_toggle=get_element("sun-toggle"))
 
 @app.route('/logout')
 def logout():
     flask_login.logout_user()
     return redirect('/')
-
-# Needed to make loadElement.js work with flask
-@app.route('/get_element/<element_id>')
-def get_element(element_id):
-    try:
-        with open(f'templates/elements/{element_id}.html') as file:
-            html_content = file.read()
-        return html_content
-    except FileNotFoundError:
-        return f"Error: {element_id}.html not found", 404
 
 
 # ------------------

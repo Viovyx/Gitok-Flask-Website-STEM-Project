@@ -18,7 +18,7 @@
     </head>
     <body>
         <!-- Load Header -->
-        <span id="header"> </span>
+        <span id="header">{{ header|safe }}</span>
 
         <!-- Main -->
         <div class="page-wrapper">
@@ -85,14 +85,13 @@
         </div>
 
         <!-- Theme Toggle -->
-        <span id="moon-toggle"> </span>
-        <span id="sun-toggle"> </span>
+        <span id="moon-toggle">{{ moon_toggle|safe }}</span>
+        <span id="sun-toggle">{{ sun_toggle|safe }}</span>
         
         <!-- Load Footer -->
-        <span id="footer"> </span>
+        <span id="footer">{{ footer|safe }}</span>
     </body>
 
-    <script src="/static/js/loadElements.js"></script>
     <script src="/static/js/loadTheme.js"></script>
     <!-- <script src="/static/js/placeholder-graphs.js"></script> -->
     <script src="/static/js/sensorGraph.js"></script>
