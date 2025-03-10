@@ -85,9 +85,12 @@ const myChart = new Chart(scanner, {
 
 function setData(data) {
   data.forEach(item => {
-    // Add data to arrays
-    myChart.update();
+    days.push(item.Date);
+    successfulScans.push(item.Successful);
+    failedScans.push(item.Failed)
+    totalScans.push(item.Successful + item.Failed);
   });
+  myChart.update();
 }
 
 function addData(label, data) {
@@ -112,8 +115,6 @@ function addData(label, data) {
       failedScans.push(0)
     }
   }
-
-  console.log(totalScans.slice(-1)[0])
   myChart.update();
 }
 
