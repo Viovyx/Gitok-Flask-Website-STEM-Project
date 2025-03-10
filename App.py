@@ -1,6 +1,6 @@
 import eventlet
 eventlet.monkey_patch()
-import os, flask_login, requests
+import os, flask_login, requests, json
 from dotenv import load_dotenv
 from flask import Flask, render_template, request, redirect
 from flask_mqtt import Mqtt
@@ -45,21 +45,69 @@ def get_element(element_id):
     except FileNotFoundError:
         return f"Error: {element_id}.html not found", 404
 
-def get_date():
-    now = datetime.now(timezone.utc)
-    return now.strftime("%m/%d/%Y %H:%M UTC")  # Remove time after testing!
-
 def get_user_data(email):
     api_url = api_base_url + f"users?filter=Email,eq,{email}"
     response = requests.get(api_url, headers=headers)
     response = response.json()['records']
     return response
 
-def get_tabel_data(table):
-    api_url = api_base_url + f"{table}"
+def get_api_table(table):
+    api_url = api_base_url + table
     response = requests.get(api_url, headers=headers)
     response = response.json()['records']
     return response
+
+def get_api_data(table, key, value):
+    api_url = api_base_url + f"{table}?filter={key},eq,{value}"
+    response = requests.get(api_url, headers=headers)
+    response = response.json()['records']
+    return response
+
+def post_api_data(table, data):
+    api_url = api_base_url + table
+    response = requests.post(api_url, data, headers=headers)
+    return response
+
+def put_api_data(table, id, data):
+    api_url = api_base_url + f"{table}/{id}"
+    response = requests.put(api_url, data, headers=headers)
+    return response
+
+def create_log_obj(data):
+    date = datetime.now(timezone.utc)
+    card_pass = data["pass"]
+    card_info = get_api_data("cards", "UniquePass", card_pass)[0]
+    user_id = card_info["User_id"]
+    user_info = get_api_data("users", "id", user_id)[0]
+    action_id = data["action"]
+    action = ["failed", "successful", "checkout"][action_id]
+
+    log_obj = {
+        "User_id": user_id,
+        "Action": action_id,
+        "Description": f"Scan {action} for {user_info['FirstName']} {user_info['LastName']}",
+        "Time": date
+    }
+    return log_obj
+
+def update_data(data, log_obj):
+    last_data = data[-1] if len(data) else {"id":-1,"Date":-1}
+    id = last_data["id"]
+    date = log_obj["Time"].strftime("%Y-%m-%d")
+    action = log_obj["Action"]
+    if last_data["Date"] == date:
+        data_obj = {
+            "Successful":last_data["Successful"]+1 if action else last_data["Successful"],
+            "Failed":last_data["Failed"]+1 if not action else last_data["Failed"]
+        }
+        put_api_data("data", id, data_obj)
+    else:
+        data_obj = {
+            "Date":date,
+            "Successful":1 if action else 0,
+            "Failed":1 if not action else 0
+        }
+        post_api_data("data", data_obj)
 
 
 # ------------
@@ -132,19 +180,23 @@ def home():
                             edit_panel=get_element("edit-panel"),
                             create_panel=get_element("create-panel"),
                             name=f"{user['FirstName']} {user['LastName']}",
-                            keycards=get_tabel_data("cards"),
-                            devices=get_tabel_data("devices"),
-                            users=get_tabel_data("users"),
-                            groups=get_tabel_data("groups"))
+                            keycards=get_api_table("cards"),
+                            devices=get_api_table("devices"),
+                            users=get_api_table("users"),
+                            groups=get_api_table("groups"))
 
 @app.route('/live-data')
 @flask_login.login_required
 def live_data():
+    data = get_api_table("data")
+    last_week_data = data[-7:]
+
     return render_template('live-data.html',
                             header=get_element("header"),
                             footer=get_element("footer"),
                             moon_toggle=get_element("moon-toggle"),
-                            sun_toggle=get_element("sun-toggle"))
+                            sun_toggle=get_element("sun-toggle"),
+                            data=last_week_data)
 
 @app.route('/log')
 @flask_login.login_required
@@ -154,7 +206,7 @@ def log():
                             footer=get_element("footer"),
                             moon_toggle=get_element("moon-toggle"),
                             sun_toggle=get_element("sun-toggle"),
-                            logs=get_tabel_data("logs"))
+                            logs=get_api_table("logs"))
 
 @app.route('/account', methods=['GET', 'POST'])
 @flask_login.login_required
@@ -185,7 +237,16 @@ def handle_mqtt_message(client, userdata, message):
     print(message.topic, message.payload.decode())
     # Handle received message here
     if (message.topic == "Tapgate/feeds/scanner.action"):
-        socketio.emit("updateSensorGraph", {"value": message.payload.decode(), "date": get_date()})
+        action_data = json.loads(message.payload.decode())  # {"pass":"DSQDad", "action":1}
+        log_obj = create_log_obj(action_data)
+        post_api_data("logs", log_obj)
+
+        data = get_api_table("data")
+        update_data(data, log_obj)
+
+        action = log_obj["Action"]
+        date = log_obj["Time"].strftime("%Y-%m-%d")
+        socketio.emit("updateSensorGraph", {"value": action, "date": date})
 
 @socketio.on('connect')
 def connect():

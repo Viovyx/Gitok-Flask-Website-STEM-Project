@@ -83,6 +83,13 @@ const myChart = new Chart(scanner, {
   },
 });
 
+function setData(data) {
+  data.forEach(item => {
+    // Add data to arrays
+    myChart.update();
+  });
+}
+
 function addData(label, data) {
   if (days.slice(-1)[0] == label){
     totalScans[totalScans.length - 1] += 1;
