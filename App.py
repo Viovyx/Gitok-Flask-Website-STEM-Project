@@ -231,22 +231,56 @@ def handle_connect(client, userdata, flags, rc):
     print('MQTT Connected')
     # Handle subscription here
     mqtt.subscribe("Tapgate/feeds/scanner.action")
+    mqtt.subscribe("Tapgate/feeds/scanner.checkcard")
 
 @mqtt.on_message()
 def handle_mqtt_message(client, userdata, message):
     print(message.topic, message.payload.decode())
     # Handle received message here
-    if (message.topic == "Tapgate/feeds/scanner.action"):
-        action_data = json.loads(message.payload.decode())  # {"pass":"DSQDad", "action":1}
-        log_obj = create_log_obj(action_data)
-        post_api_data("logs", log_obj)
+    match message.topic:
+        case "Tapgate/feeds/scanner.action":
+            action_data = json.loads(message.payload.decode())  # {"pass":"DSQDad", "action":1}
+            log_obj = create_log_obj(action_data)
+            post_api_data("logs", log_obj)
 
-        data = get_api_table("data")
-        update_data(data, log_obj)
+            data = get_api_table("data")
+            update_data(data, log_obj)
 
-        action = log_obj["Action"]
-        date = log_obj["Time"].strftime("%Y-%m-%d")
-        socketio.emit("updateSensorGraph", {"value": action, "date": date})
+            action = log_obj["Action"]
+            date = log_obj["Time"].strftime("%Y-%m-%d")
+            socketio.emit("updateSensorGraph", {"value": action, "date": date})
+
+        case "Tapgate/feeds/scanner.checkcard":
+            action_feed = "Tapgate/feeds/scanner.action"
+            data = json.loads(message.payload.decode())  # {"uid":[255,255,255,255], "pass":"DSQDad"}
+            card_uid = data["uid"]
+            card_pass = data["pass"]
+            card_info = get_api_data("cards", "CardUID", card_uid)[0]
+            authenticated = card_pass == card_info["UniquePass"]
+
+            if authenticated:
+                user_info = get_api_data("users", "id", card_info["User_id"])[0]
+                group_info = get_api_data("groups", "id", user_info["Group_id"])[0]
+                admin = group_info["Admin"]
+                access_level = group_info["Access"]
+                access = ["none", "default", "higher"][access_level]
+
+                # TODO: add checking out functionality (add "current_door" to users in db?)
+                if not admin:
+                    match access:
+                        case "none":
+                            action = 0
+                        case "default":
+                            action = 1
+                        case "higher":
+                            action = 1
+                else:  # User is admin
+                    action = 1
+                
+                mqtt.publish(action_feed, {"pass":card_pass,"action":action})
+
+        case _:
+            print("[MQTT] Unknown message topic recieved: " + message.topic)
 
 @socketio.on('connect')
 def connect():
