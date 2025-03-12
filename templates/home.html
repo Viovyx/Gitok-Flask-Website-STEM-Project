@@ -100,7 +100,7 @@
                                 <h3 id="name">Name: {{ door.Name }}</h3>
                                 <ul>
                                     <li id="id">ID: {{ door.id }}</li>
-                                    <li id="ip">Local_IP: {{ door.Local_IP }}</li>
+                                    <li id="access">Accesslevel: {{ door.Access }}</li>
                                 </ul>
                             </div>
                         {% endif %}
@@ -144,7 +144,7 @@
                                 <h3 id="name">Name: {{ scanner.Name }}</h3>
                                 <ul>
                                     <li id="id">ID: {{ scanner.id }}</li>
-                                    <li id="ip">Local_IP: {{ scanner.Local_IP }}</li>
+                                    <li id="access">Accesslevel: {{ scanner.Access }}</li>
                                 </ul>
                             </div>
                         {% endif %}
@@ -188,8 +188,9 @@
                         <ul>
                             <li id="id">ID: {{ user.id }}</li>
                             <li id="email">Email: {{ user.Email }}</li>
-                            <li id="pass">Password: (Encrypted)</li>
+                            <li id="pass">Password: (hidden)</li>
                             <li id="group">Group_id: {{ user.Group_id }}</li>
+                            <li id="door">Group_id: {{ user.Current_Door }}</li>
                         </ul>
                     </div>
                     {% endfor %}

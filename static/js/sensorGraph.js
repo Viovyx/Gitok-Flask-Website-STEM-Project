@@ -1,5 +1,3 @@
-// TODO: Add database functionality!!
-
 const style = getComputedStyle(document.body);
 const colorPrimary = style.getPropertyValue("--primary");
 const colorSuccess = style.getPropertyValue("--success");

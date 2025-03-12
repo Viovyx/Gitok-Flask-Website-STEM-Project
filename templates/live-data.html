@@ -51,6 +51,7 @@
                 </div>
                 <div class="data-grid">
                     {% for door in doors %}
+                        <!-- TODO: update door state with db -->
                         <div class="item open" id="door-{{ door.id }}">
                             <h3>{{ door.Name }} (id: {{ door.id }})</h3>
                             <ul>
