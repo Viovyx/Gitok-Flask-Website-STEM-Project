@@ -75,19 +75,21 @@ def put_api_data(table, id, data):
 
 def create_log_obj(data):
     date = datetime.now(timezone.utc)
-    card_pass = data["pass"]
-    card_info = get_api_data("cards", "UniquePass", card_pass)[0]
-    user_id = card_info["User_id"]
-    user_info = get_api_data("users", "id", user_id)[0]
+    user_id = data["user"]
+    if user_id != 0:
+        user_info = get_api_data("users", "id", user_id)[0]
+    else:
+        user_info = {"FirstName":"Unknown", "LastName":"User"}
+    
     action_id = data["action"]
     action = ["failed", "successful", "checkout"][action_id]
 
     log_obj = {
-        "User_id": user_id,
         "Action": action_id,
         "Description": f"Scan {action} for {user_info['FirstName']} {user_info['LastName']}",
         "Time": date
     }
+
     return log_obj
 
 def update_data(data, log_obj):
@@ -206,7 +208,7 @@ def log():
                             footer=get_element("footer"),
                             moon_toggle=get_element("moon-toggle"),
                             sun_toggle=get_element("sun-toggle"),
-                            logs=get_api_table("logs"))
+                            logs=get_api_table("logs")[::-1])
 
 @app.route('/account', methods=['GET', 'POST'])
 @flask_login.login_required
@@ -239,7 +241,7 @@ def handle_mqtt_message(client, userdata, message):
     # Handle received message here
     match message.topic:
         case "Tapgate/feeds/scanner.action":
-            action_data = json.loads(message.payload.decode())  # {"pass":"DSQDad", "action":1}
+            action_data = json.loads(message.payload.decode())  # {"user":1, "action":1}
             log_obj = create_log_obj(action_data)
             post_api_data("logs", log_obj)
 
@@ -252,15 +254,22 @@ def handle_mqtt_message(client, userdata, message):
 
         case "Tapgate/feeds/scanner.checkcard":
             action_feed = "Tapgate/feeds/scanner.action"
-            data = json.loads(message.payload.decode())  # {"uid":[255,255,255,255], "pass":"DSQDad"}
+            data = json.loads(message.payload.decode())  # {"uid":"[255,255,255,255]", "pass":"DSQDad"}
             card_uid = data["uid"]
             card_pass = data["pass"]
-            card_info = get_api_data("cards", "CardUID", card_uid)[0]
-            authenticated = card_pass == card_info["UniquePass"]
+            card_info = get_api_data("cards", "CardUID", card_uid)
 
-            if authenticated:
+            if len(card_info) > 0:
+                card_info = card_info[0]
                 user_info = get_api_data("users", "id", card_info["User_id"])[0]
                 group_info = get_api_data("groups", "id", user_info["Group_id"])[0]
+                authenticated = card_pass == card_info["UniquePass"]
+            else:
+                authenticated = False
+                user_info = {"id":0}
+            
+            action = 0
+            if authenticated:
                 admin = group_info["Admin"]
                 access_level = group_info["Access"]
                 access = ["none", "default", "higher"][access_level]
@@ -276,8 +285,8 @@ def handle_mqtt_message(client, userdata, message):
                             action = 1
                 else:  # User is admin
                     action = 1
-                
-                mqtt.publish(action_feed, {"pass":card_pass,"action":action})
+            
+            mqtt.publish(action_feed, str({"user":user_info["id"],"action":action}).replace("'", '"'))
 
         case _:
             print("[MQTT] Unknown message topic recieved: " + message.topic)
