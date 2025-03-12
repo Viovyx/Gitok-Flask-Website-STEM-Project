@@ -234,6 +234,7 @@ def handle_connect(client, userdata, flags, rc):
     # Handle subscription here
     mqtt.subscribe("Tapgate/feeds/scanner.action")
     mqtt.subscribe("Tapgate/feeds/scanner.checkcard")
+    mqtt.subscribe("Tapgate/feeds/scanner.setcardpass")
 
 @mqtt.on_message()
 def handle_mqtt_message(client, userdata, message):
@@ -287,6 +288,23 @@ def handle_mqtt_message(client, userdata, message):
                     action = 1
             
             mqtt.publish(action_feed, str({"user":user_info["id"],"action":action}).replace("'", '"'))
+
+        case "Tapgate/feeds/scanner.setcardpass":
+            data = json.loads(message.payload.decode())  # {"uid":"[255,255,255,255]", "pass":"DSQDad", "user":1}
+            card_info = get_api_data("cards", "CardUID", data["uid"])
+
+            if len(card_info) > 0 and card_info[0]["CardUID"] == data["uid"]:
+                card_info = card_info[0]
+                # Edit existing card pass
+                put_api_data("cards", card_info["id"], {"UniquePass": data["pass"]})
+            else:
+                # Create new card
+                card_obj = {
+                    "CardUID": data["uid"],
+                    "UniquePass": data["pass"],
+                    "User_id": data["user"]
+                }
+                post_api_data("cards", card_obj)
 
         case _:
             print("[MQTT] Unknown message topic recieved: " + message.topic)
