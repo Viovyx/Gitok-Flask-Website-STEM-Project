@@ -111,6 +111,20 @@ def update_data(data, log_obj):
         }
         post_api_data("data", data_obj)
 
+def getDoorsData():
+    doors_db = get_api_data("devices", "Type", "lock")
+    doors = []
+    for door in doors_db:
+        users = get_api_data("users", "Current_Door", door["id"])
+        door_obj = {
+            "id":door["id"],
+            "Name":door["Name"],
+            "Users":users
+        }
+
+        doors.append(door_obj)
+    return doors
+
 
 # ------------
 # Flask Login
@@ -192,13 +206,15 @@ def home():
 def live_data():
     data = get_api_table("data")
     last_week_data = data[-7:]
+    doors = getDoorsData()
 
     return render_template('live-data.html',
                             header=get_element("header"),
                             footer=get_element("footer"),
                             moon_toggle=get_element("moon-toggle"),
                             sun_toggle=get_element("sun-toggle"),
-                            data=last_week_data)
+                            data=last_week_data,
+                            doors=doors)
 
 @app.route('/log')
 @flask_login.login_required
