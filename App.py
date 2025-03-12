@@ -255,12 +255,14 @@ def handle_mqtt_message(client, userdata, message):
 
         case "Tapgate/feeds/scanner.checkcard":
             action_feed = "Tapgate/feeds/scanner.action"
-            data = json.loads(message.payload.decode())  # {"uid":"[255,255,255,255]", "pass":"DSQDad"}
+            data = json.loads(message.payload.decode())  # {"uid":"[255,255,255,255]", "pass":"DSQDad", "door":1}
             card_uid = data["uid"]
             card_pass = data["pass"]
             card_info = get_api_data("cards", "CardUID", card_uid)
+            doors = get_api_data("devices", "Type", "lock")
+            door = next((door_obj for door_obj in doors if door_obj["id"] == data["door"]), None)
 
-            if len(card_info) > 0:
+            if len(card_info) > 0 and door != None:
                 card_info = card_info[0]
                 user_info = get_api_data("users", "id", card_info["User_id"])[0]
                 group_info = get_api_data("groups", "id", user_info["Group_id"])[0]
@@ -272,21 +274,25 @@ def handle_mqtt_message(client, userdata, message):
             action = 0
             if authenticated:
                 admin = group_info["Admin"]
-                access_level = group_info["Access"]
-                access = ["none", "default", "higher"][access_level]
+                access = group_info["Access"]
 
-                # TODO: add checking out functionality (add "current_door" to users in db?)
-                if not admin:
-                    match access:
-                        case "none":
+                if user_info["Current_Door"] != 1 or door["id"] == 1:  # User is still checked in or choose to checkout => check out
+                    action = 2
+                
+                if user_info["Current_Door"] != data["door"] and door["id"] != 1:  # Make sure to not checkin to same door again and trying to checkout
+                    if not admin:
+                        if access >= door["Access"]:  # access allowed
+                            action = 1
+                        else:
                             action = 0
-                        case "default":
-                            action = 1
-                        case "higher":
-                            action = 1
-                else:  # User is admin
-                    action = 1
-            
+                    else:  # User is admin
+                        action = 1
+
+            if action == 1:
+                put_api_data("users", user_info["id"], {"Current_Door":door["id"]})
+            else:
+                put_api_data("users", user_info["id"], {"Current_Door":1})
+
             mqtt.publish(action_feed, str({"user":user_info["id"],"action":action}).replace("'", '"'))
 
         case "Tapgate/feeds/scanner.setcardpass":
