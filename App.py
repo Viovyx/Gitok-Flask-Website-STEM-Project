@@ -75,20 +75,21 @@ def put_api_data(table, id, data):
 
 def create_log_obj(data):
     date = datetime.now(timezone.utc)
-    card_pass = data["pass"]
-    # TODO: add handling for unknown cardpass
-    card_info = get_api_data("cards", "UniquePass", card_pass)[0]
-    user_id = card_info["User_id"]
-    user_info = get_api_data("users", "id", user_id)[0]
+    user_id = data["user"]
+    if user_id != 0:
+        user_info = get_api_data("users", "id", user_id)[0]
+    else:
+        user_info = {"FirstName":"Unknown", "LastName":"User"}
+    
     action_id = data["action"]
     action = ["failed", "successful", "checkout"][action_id]
 
     log_obj = {
-        "User_id": user_id,
         "Action": action_id,
         "Description": f"Scan {action} for {user_info['FirstName']} {user_info['LastName']}",
         "Time": date
     }
+
     return log_obj
 
 def update_data(data, log_obj):
@@ -109,6 +110,20 @@ def update_data(data, log_obj):
             "Failed":1 if not action else 0
         }
         post_api_data("data", data_obj)
+
+def getDoorsData():
+    doors_db = get_api_data("devices", "Type", "lock")
+    doors = []
+    for door in doors_db:
+        users = get_api_data("users", "Current_Door", door["id"])
+        door_obj = {
+            "id":door["id"],
+            "Name":door["Name"],
+            "Users":users
+        }
+
+        doors.append(door_obj)
+    return doors
 
 
 # ------------
@@ -191,13 +206,15 @@ def home():
 def live_data():
     data = get_api_table("data")
     last_week_data = data[-7:]
+    doors = getDoorsData()
 
     return render_template('live-data.html',
                             header=get_element("header"),
                             footer=get_element("footer"),
                             moon_toggle=get_element("moon-toggle"),
                             sun_toggle=get_element("sun-toggle"),
-                            data=last_week_data)
+                            data=last_week_data,
+                            doors=doors)
 
 @app.route('/log')
 @flask_login.login_required
@@ -207,7 +224,7 @@ def log():
                             footer=get_element("footer"),
                             moon_toggle=get_element("moon-toggle"),
                             sun_toggle=get_element("sun-toggle"),
-                            logs=get_api_table("logs"))
+                            logs=get_api_table("logs")[::-1])
 
 @app.route('/account', methods=['GET', 'POST'])
 @flask_login.login_required
@@ -233,6 +250,7 @@ def handle_connect(client, userdata, flags, rc):
     # Handle subscription here
     mqtt.subscribe("Tapgate/feeds/scanner.action")
     mqtt.subscribe("Tapgate/feeds/scanner.checkcard")
+    mqtt.subscribe("Tapgate/feeds/scanner.setcardpass")
 
 @mqtt.on_message()
 def handle_mqtt_message(client, userdata, message):
@@ -240,7 +258,7 @@ def handle_mqtt_message(client, userdata, message):
     # Handle received message here
     match message.topic:
         case "Tapgate/feeds/scanner.action":
-            action_data = json.loads(message.payload.decode())  # {"pass":"DSQDad", "action":1}
+            action_data = json.loads(message.payload.decode())  # {"user":1, "action":1}
             log_obj = create_log_obj(action_data)
             post_api_data("logs", log_obj)
 
@@ -253,33 +271,63 @@ def handle_mqtt_message(client, userdata, message):
 
         case "Tapgate/feeds/scanner.checkcard":
             action_feed = "Tapgate/feeds/scanner.action"
-            data = json.loads(message.payload.decode())  # {"uid":"[255,255,255,255]", "pass":"DSQDad"}
+            data = json.loads(message.payload.decode())  # {"uid":"[255,255,255,255]", "pass":"DSQDad", "door":1}
             card_uid = data["uid"]
             card_pass = data["pass"]
-            card_info = get_api_data("cards", "CardUID", card_uid)[0]
-            authenticated = card_pass == card_info["UniquePass"]
+            card_info = get_api_data("cards", "CardUID", card_uid)
+            doors = get_api_data("devices", "Type", "lock")
+            door = next((door_obj for door_obj in doors if door_obj["id"] == data["door"]), None)
 
             action = 0
-            if authenticated:
+            if len(card_info) > 0 and door != None:
+                card_info = card_info[0]
                 user_info = get_api_data("users", "id", card_info["User_id"])[0]
                 group_info = get_api_data("groups", "id", user_info["Group_id"])[0]
-                admin = group_info["Admin"]
-                access_level = group_info["Access"]
-                access = ["none", "default", "higher"][access_level]
-
-                # TODO: add checking out functionality (add "current_door" to users in db?)
-                if not admin:
-                    match access:
-                        case "none":
-                            action = 0
-                        case "default":
-                            action = 1
-                        case "higher":
-                            action = 1
-                else:  # User is admin
-                    action = 1
+                authenticated = card_pass == card_info["UniquePass"]
+            else:
+                authenticated = False
+                user_info = {"id":0}
             
-            mqtt.publish(action_feed, str({"pass":card_pass,"action":action}).replace("'", '"'))
+            action = 0
+            if authenticated:
+                admin = group_info["Admin"]
+                access = group_info["Access"]
+
+                if user_info["Current_Door"] != 1 or door["id"] == 1:  # User is still checked in or choose to checkout => check out
+                    action = 2
+                
+                if user_info["Current_Door"] != data["door"] and door["id"] != 1:  # Make sure to not checkin to same door again and trying to checkout
+                    if not admin:
+                        if access >= door["Access"]:  # access allowed
+                            action = 1
+                        else:
+                            action = 0
+                    else:  # User is admin
+                        action = 1
+
+            if action == 1:
+                put_api_data("users", user_info["id"], {"Current_Door":door["id"]})
+            else:
+                put_api_data("users", user_info["id"], {"Current_Door":1})
+
+            mqtt.publish(action_feed, str({"user":user_info["id"],"action":action}).replace("'", '"'))
+
+        case "Tapgate/feeds/scanner.setcardpass":
+            data = json.loads(message.payload.decode())  # {"uid":"[255,255,255,255]", "pass":"DSQDad", "user":1}
+            card_info = get_api_data("cards", "CardUID", data["uid"])
+
+            if len(card_info) > 0 and card_info[0]["CardUID"] == data["uid"]:
+                card_info = card_info[0]
+                # Edit existing card pass
+                put_api_data("cards", card_info["id"], {"UniquePass": data["pass"]})
+            else:
+                # Create new card
+                card_obj = {
+                    "CardUID": data["uid"],
+                    "UniquePass": data["pass"],
+                    "User_id": data["user"]
+                }
+                post_api_data("cards", card_obj)
 
         case _:
             print("[MQTT] Unknown message topic recieved: " + message.topic)

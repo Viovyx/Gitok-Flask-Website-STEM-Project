@@ -50,30 +50,17 @@
                     <span class="legend-error">door closed</span>
                 </div>
                 <div class="data-grid">
-                    <div class="item open" id="door-1">
-                        <h3>Door 1</h3>
-                        <ul>
-                            <li>{user1} (id: {id})</li>
-                            <li>{user2} (id: {id})</li>
-                            <li>{user3} (id: {id})</li>
-                        </ul>
-                    </div>
-                    <div class="item warning" id="door-2">
-                        <h3>Door 2</h3>
-                        <ul>
-                            <li>{user1} (id: {id})</li>
-                            <li>{user2} (id: {id})</li>
-                            <li>{user3} (id: {id})</li>
-                        </ul>
-                    </div>
-                    <div class="item closed" id="door-3">
-                        <h3>Door 3</h3>
-                        <ul>
-                            <li>{user1} (id: {id})</li>
-                            <li>{user2} (id: {id})</li>
-                            <li>{user3} (id: {id})</li>
-                        </ul>
-                    </div>
+                    {% for door in doors %}
+                        <!-- TODO: update door state with db -->
+                        <div class="item open" id="door-{{ door.id }}">
+                            <h3>{{ door.Name }} (id: {{ door.id }})</h3>
+                            <ul>
+                                {% for user in door.Users %}
+                                    <li>{{ user.FirstName }} {{ user.LastName }} (id: {{ user.id }})</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endfor %}
                 </div>
 
                 <hr />
