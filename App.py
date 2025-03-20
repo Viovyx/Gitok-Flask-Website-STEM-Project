@@ -76,6 +76,7 @@ def put_api_data(table, id, data):
 def create_log_obj(data):
     date = datetime.now(timezone.utc)
     card_pass = data["pass"]
+    # TODO: add handling for unknown cardpass
     card_info = get_api_data("cards", "UniquePass", card_pass)[0]
     user_id = card_info["User_id"]
     user_info = get_api_data("users", "id", user_id)[0]
@@ -252,12 +253,13 @@ def handle_mqtt_message(client, userdata, message):
 
         case "Tapgate/feeds/scanner.checkcard":
             action_feed = "Tapgate/feeds/scanner.action"
-            data = json.loads(message.payload.decode())  # {"uid":[255,255,255,255], "pass":"DSQDad"}
+            data = json.loads(message.payload.decode())  # {"uid":"[255,255,255,255]", "pass":"DSQDad"}
             card_uid = data["uid"]
             card_pass = data["pass"]
             card_info = get_api_data("cards", "CardUID", card_uid)[0]
             authenticated = card_pass == card_info["UniquePass"]
 
+            action = 0
             if authenticated:
                 user_info = get_api_data("users", "id", card_info["User_id"])[0]
                 group_info = get_api_data("groups", "id", user_info["Group_id"])[0]
@@ -276,8 +278,8 @@ def handle_mqtt_message(client, userdata, message):
                             action = 1
                 else:  # User is admin
                     action = 1
-                
-                mqtt.publish(action_feed, {"pass":card_pass,"action":action})
+            
+            mqtt.publish(action_feed, str({"pass":card_pass,"action":action}).replace("'", '"'))
 
         case _:
             print("[MQTT] Unknown message topic recieved: " + message.topic)
