@@ -271,12 +271,19 @@ def handle_mqtt_message(client, userdata, message):
 
         case "Tapgate/feeds/scanner.checkcard":
             action_feed = "Tapgate/feeds/scanner.action"
-            data = json.loads(message.payload.decode())  # {"uid":"[255,255,255,255]", "pass":"DSQDad", "door":1}
+            data = json.loads(message.payload.decode())  # {"uid":"[255,255,255,255]", "pass":"DSQDad", "ip":192.168.0.10}
             card_uid = data["uid"]
             card_pass = data["pass"]
             card_info = get_api_data("cards", "CardUID", card_uid)
-            doors = get_api_data("devices", "Type", "lock")
-            door = next((door_obj for door_obj in doors if door_obj["id"] == data["door"]), None)
+
+            scanner_ip = data["ip"]
+            scanners = get_api_data("devices", "IP", scanner_ip)
+
+            if len(scanners) > 0:
+                scanner = scanners[0]
+                door_id = scanner["Door_Id"]
+                doors = get_api_data("devices", "Type", "lock")
+                door = next((door_obj for door_obj in doors if door_obj["id"] == door_id), None)
 
             action = 0
             if len(card_info) > 0 and door != None:
@@ -296,7 +303,7 @@ def handle_mqtt_message(client, userdata, message):
                 if user_info["Current_Door"] != 1 or door["id"] == 1:  # User is still checked in or choose to checkout => check out
                     action = 2
                 
-                if user_info["Current_Door"] != data["door"] and door["id"] != 1:  # Make sure to not checkin to same door again and trying to checkout
+                if user_info["Current_Door"] != door_id and door["id"] != 1:  # Make sure to not checkin to same door again and trying to checkout
                     if not admin:
                         if access >= door["Access"]:  # access allowed
                             action = 1
