@@ -51,7 +51,7 @@
                     <div
                         class="item"
                         id="keycard-{{ keycard.id }}"
-                        onclick="openPanel('edit')"
+                        onclick="window.location.href = window.location.pathname + '?type=edit&table=cards&id={{ keycard.id }}'"
                     >
                         <h3 id="name">CardUID: {{ keycard.CardUID }}</h3>
                         <ul>

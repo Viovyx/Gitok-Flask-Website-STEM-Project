@@ -188,13 +188,31 @@ def login():
 @flask_login.login_required
 def home():
     user = get_user_data(flask_login.current_user.id)[0]
+
+    panel_type = request.args.get("type")
+    table = request.args.get("table")
+    item_id = request.args.get("id")
+    panel = {}
+
+    if panel_type and table and item_id:
+        try:
+            item_info = get_api_data(table, "id", item_id)[0]
+            item_info.pop("id")
+            panel = {
+                "type":panel_type,
+                "table":table,
+                "id":item_id,
+                "fields":[{"name":field, "current_value":item_info[field]} for field in item_info]
+            }
+            print(panel)  # debugging
+        except:
+            return redirect("/home")
+
     return render_template('home.html', 
                             header=get_element("header"),
                             footer=get_element("footer"),
                             moon_toggle=get_element("moon-toggle"),
                             sun_toggle=get_element("sun-toggle"),
-                            edit_panel=get_element("edit-panel"),
-                            create_panel=get_element("create-panel"),
                             name=f"{user['FirstName']} {user['LastName']}",
                             keycards=get_api_table("cards"),
                             devices=get_api_table("devices"),
