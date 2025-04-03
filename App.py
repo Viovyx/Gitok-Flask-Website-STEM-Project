@@ -84,9 +84,14 @@ def create_log_obj(data):
     action_id = data["action"]
     action = ["failed", "successful", "checkout"][action_id]
 
+    if data["door_ip"]:
+        door_info = get_api_data("devices", "IP", data["door_ip"])[0]
+    else:
+        door_info = {"Name":"Unknown Door"}
+
     log_obj = {
         "Action": action_id,
-        "Description": f"Scan {action} for {user_info['FirstName']} {user_info['LastName']}",
+        "Description": f"Scan {action} for {user_info['FirstName']} {user_info['LastName']} on '{door_info["Name"]}'",
         "Time": date
     }
 
@@ -276,7 +281,7 @@ def handle_mqtt_message(client, userdata, message):
     # Handle received message here
     match message.topic:
         case "Tapgate/feeds/scanner.action":
-            action_data = json.loads(message.payload.decode())  # {"user":1, "action":1}
+            action_data = json.loads(message.payload.decode())  # {"user":1, "action":1, "door_ip":"192.168.0.11"}
             log_obj = create_log_obj(action_data)
             post_api_data("logs", log_obj)
 
