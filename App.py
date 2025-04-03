@@ -332,9 +332,10 @@ def handle_mqtt_message(client, userdata, message):
             if action == 1:
                 put_api_data("users", user_info["id"], {"Current_Door":door["id"]})
             elif user_info["id"]:
+                door = {"IP":0}
                 put_api_data("users", user_info["id"], {"Current_Door":1})
+            mqtt.publish(action_feed, str({"user":user_info["id"],"action":action,"door_ip":str(door["IP"])}).replace("'", '"'))
 
-            mqtt.publish(action_feed, str({"user":user_info["id"],"action":action}).replace("'", '"'))
 
         case "Tapgate/feeds/scanner.setcardpass":
             data = json.loads(message.payload.decode())  # {"uid":"[255,255,255,255]", "pass":"DSQDad", "user":1}
