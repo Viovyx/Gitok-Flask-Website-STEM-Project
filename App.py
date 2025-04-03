@@ -300,7 +300,7 @@ def handle_mqtt_message(client, userdata, message):
             if len(scanner) and len(card_info):
                 scanner = scanner[0]
                 card_info = card_info[0]
-                
+
                 door_id = scanner["Door_Id"]
                 door = get_api_data("devices", "id", door_id)
                 door = door[0]
@@ -331,7 +331,7 @@ def handle_mqtt_message(client, userdata, message):
 
             if action == 1:
                 put_api_data("users", user_info["id"], {"Current_Door":door["id"]})
-            else:
+            elif user_info["id"]:
                 put_api_data("users", user_info["id"], {"Current_Door":1})
 
             mqtt.publish(action_feed, str({"user":user_info["id"],"action":action}).replace("'", '"'))
