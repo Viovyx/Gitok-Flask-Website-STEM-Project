@@ -289,23 +289,22 @@ def handle_mqtt_message(client, userdata, message):
 
         case "Tapgate/feeds/scanner.checkcard":
             action_feed = "Tapgate/feeds/scanner.action"
-            data = json.loads(message.payload.decode())  # {"uid":"[255,255,255,255]", "pass":"DSQDad", "ip":192.168.0.10}
-            card_uid = data["uid"]
+            data = json.loads(message.payload.decode())  # {"uid":"[255.255.255.255]", "pass":"DSQDad", "ip":"192.168.0.10"}
+            card_uid = data["uid"].replace(".", ",")
             card_pass = data["pass"]
             card_info = get_api_data("cards", "CardUID", card_uid)
 
             scanner_ip = data["ip"]
-            scanners = get_api_data("devices", "IP", scanner_ip)
+            scanner = get_api_data("devices", "IP", scanner_ip)
 
-            if len(scanners) > 0:
-                scanner = scanners[0]
-                door_id = scanner["Door_Id"]
-                doors = get_api_data("devices", "Type", "lock")
-                door = next((door_obj for door_obj in doors if door_obj["id"] == door_id), None)
-
-            action = 0
-            if len(card_info) > 0 and door != None:
+            if len(scanner) and len(card_info):
+                scanner = scanner[0]
                 card_info = card_info[0]
+                
+                door_id = scanner["Door_Id"]
+                door = get_api_data("devices", "id", door_id)
+                door = door[0]
+                
                 user_info = get_api_data("users", "id", card_info["User_id"])[0]
                 group_info = get_api_data("groups", "id", user_info["Group_id"])[0]
                 authenticated = card_pass == card_info["UniquePass"]
@@ -327,7 +326,7 @@ def handle_mqtt_message(client, userdata, message):
                             action = 1
                         else:
                             action = 0
-                    else:  # User is admin
+                    else:  # User is admin = Always allowed
                         action = 1
 
             if action == 1:
@@ -341,30 +340,33 @@ def handle_mqtt_message(client, userdata, message):
             data = json.loads(message.payload.decode())  # {"uid":"[255,255,255,255]", "pass":"DSQDad", "user":1}
             card_info = get_api_data("cards", "CardUID", data["uid"])
 
-            if len(card_info) > 0 and card_info[0]["CardUID"] == data["uid"]:
+            if len(card_info):
                 card_info = card_info[0]
                 # Edit existing card pass
                 put_api_data("cards", card_info["id"], {"UniquePass": data["pass"]})
             else:
                 # Create new card
-                card_obj = {
-                    "CardUID": data["uid"],
-                    "UniquePass": data["pass"],
-                    "User_id": data["user"]
-                }
-                post_api_data("cards", card_obj)
+                user = get_api_data("users", "id", data["user"])
+
+                if len(user):
+                    card_obj = {
+                        "CardUID": data["uid"],
+                        "UniquePass": data["pass"],
+                        "User_id": user[0]["id"]
+                    }
+                    post_api_data("cards", card_obj)
 
         case _:
             print("[MQTT] Unknown message topic recieved: " + message.topic)
 
 @socketio.on('connect')
 def connect():
-    print('Client connected')
+    print('[SocketIO] Client connected')
 
 
 @socketio.on('disconnect')
 def disconnect():
-    print('Client disconnected',  request.sid)
+    print('[SocketIO] Client disconnected',  request.sid)
 
 
 # --------
