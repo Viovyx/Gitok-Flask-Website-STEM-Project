@@ -293,7 +293,7 @@ def handle_mqtt_message(client, userdata, message):
 
             user_info = get_api_data("users", "id", user_id)[0]
             new_door_id = get_api_data("devices", "IP", action_data["door_ip"])[0]["id"]
-            socketio.emit("updateDoorUsers", {"user_id":user_id, "first_name":user_info["FirstName"], "last_name":user_info["LastName"], "new_door":new_door_id})
+            socketio.emit("updateDoorUser", {"user_id":user_id, "first_name":user_info["FirstName"], "last_name":user_info["LastName"], "new_door":new_door_id})
 
             log_obj = create_log_obj(action_data)
             post_api_data("logs", log_obj)
@@ -378,6 +378,7 @@ def handle_mqtt_message(client, userdata, message):
         case "Tapgate/feeds/lock.status":
             data = json.loads(message.payload.decode())  # {"status":0, "door_ip":"192.168.0.11"}
             door_info = get_api_data("devices", "IP", data["door_ip"])[0]
+            socketio.emit("updateDoorState", {"door_id":door_info["id"], "status":data["status"]})
             put_api_data("devices", door_info["id"], {"Status":data["status"]})
 
         case _:

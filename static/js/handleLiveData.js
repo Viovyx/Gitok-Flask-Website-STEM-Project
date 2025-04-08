@@ -145,8 +145,8 @@ socket.on("updateSensorGraph", function (msg) {
   addData(msg.date, msg.value);
 });
 
-// Doors
-socket.on("updateDoorUsers", function (msg) {
+// Door users
+socket.on("updateDoorUser", function (msg) {
   var old_user = document.getElementById("user-" + msg.user_id);
   old_user.parentNode.removeChild(old_user);  // Remove user from old door
 
@@ -155,4 +155,12 @@ socket.on("updateDoorUsers", function (msg) {
   new_user.appendChild(document.createTextNode(msg.first_name + " " + msg.last_name + " (id: " + msg.user_id + ")"));
   new_user.id = "user-" + msg.user_id;
   new_door.append(new_user);
+})
+
+// Door states
+socket.on("updateDoorState", function (msg) {
+  var door = document.getElementById("door-" + msg.door_id);
+  var state = ["warning", "closed", "open"][msg.status]
+  door.className = "";
+  door.classList.add("item", state)
 })
