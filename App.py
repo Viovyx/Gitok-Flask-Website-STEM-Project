@@ -300,7 +300,7 @@ def handle_mqtt_message(client, userdata, message):
             log_obj = create_log_obj(action_data)
             post_api_data("logs", log_obj)
 
-            print(data)
+            data = get_api_table("data")
             update_data(data, log_obj)
 
             action = log_obj["Action"]
