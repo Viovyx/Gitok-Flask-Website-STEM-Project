@@ -52,7 +52,7 @@
                 <div class="data-grid" id="doors">
                     {% for door in doors %}
                         <!-- TODO: update door state with db -->
-                        <div class="item warning" id="door-{{ door.id }}">
+                        <div class="item {{ door.Status }}" id="door-{{ door.id }}">
                             <h3>{{ door.Name }} (id: {{ door.id }})</h3>
                             <ul id="door-ul-{{ door.id }}">
                                 {% for user in door.Users %}

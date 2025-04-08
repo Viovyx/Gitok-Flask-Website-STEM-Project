@@ -122,6 +122,7 @@ def update_data(data, log_obj):
         post_api_data("data", data_obj)
 
 def getDoorsData():
+    states = ["warning", "closed", "open"]
     doors_db = get_api_data("devices", "Type", "lock")
     doors = []
     for door in doors_db:
@@ -129,6 +130,7 @@ def getDoorsData():
         door_obj = {
             "id":door["id"],
             "Name":door["Name"],
+            "Status":states[door["Status"]],
             "Users":users
         }
 
