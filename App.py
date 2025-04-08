@@ -73,6 +73,11 @@ def put_api_data(table, id, data):
     response = requests.put(api_url, data, headers=headers)
     return response
 
+def reset_door_states():
+    doors = get_api_data("devices", "Type", "lock")
+    for door in doors:
+        put_api_data("devices", door["id"], {"Status":0})
+
 def create_log_obj(data):
     date = datetime.now(timezone.utc)
     user_id = data["user"]
@@ -274,6 +279,7 @@ def handle_connect(client, userdata, flags, rc):
     mqtt.subscribe("Tapgate/feeds/scanner.action")
     mqtt.subscribe("Tapgate/feeds/scanner.checkcard")
     mqtt.subscribe("Tapgate/feeds/scanner.setcardpass")
+    mqtt.subscribe("Tapgate/feeds/lock.status")
 
 @mqtt.on_message()
 def handle_mqtt_message(client, userdata, message):
@@ -369,6 +375,11 @@ def handle_mqtt_message(client, userdata, message):
                     }
                     post_api_data("cards", card_obj)
 
+        case "Tapgate/feeds/lock.status":
+            data = json.loads(message.payload.decode())  # {"status":0, "door_ip":"192.168.0.11"}
+            door_info = get_api_data("devices", "IP", data["door_ip"])[0]
+            put_api_data("devices", door_info["id"], {"Status":data["status"]})
+
         case _:
             print("[MQTT] Unknown message topic recieved: " + message.topic)
 
@@ -386,4 +397,5 @@ def disconnect():
 # Run App
 # --------
 if __name__ == "__main__":
+    reset_door_states()
     socketio.run(app, host="0.0.0.0", debug=True, use_reloader=False)
