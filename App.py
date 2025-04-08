@@ -259,11 +259,40 @@ def log():
 @app.route('/account', methods=['GET', 'POST'])
 @flask_login.login_required
 def account():
-    return render_template('account.html',
-                            header=get_element("header"),
-                            footer=get_element("footer"),
-                            moon_toggle=get_element("moon-toggle"),
-                            sun_toggle=get_element("sun-toggle"))
+    user_data = get_user_data(flask_login.current_user.id)[0]
+    
+    if request.method == 'GET':
+
+        return render_template('account.html',
+                                header=get_element("header"),
+                                footer=get_element("footer"),
+                                moon_toggle=get_element("moon-toggle"),
+                                sun_toggle=get_element("sun-toggle"),
+                                user = user_data)
+
+    match request.args.get("action"):
+        case "profile":
+            if bcrypt.check_password_hash(user_data['Password'], request.form['password']):
+                email = request.form["email"] if request.form["email"] else user_data["Email"]
+                firstname = request.form["first-name"] if request.form["first-name"] else user_data["FirstName"]
+                lastname = request.form["last-name"] if request.form["last-name"] else user_data["LastName"]
+
+                put_api_data("users", user_data["id"], {"Email":email, "FirstName":firstname, "LastName":lastname})
+                return redirect("/account")
+            else:
+                return redirect("/account?error=bad_pass")
+        
+        case "pass":
+            if request.form["new-password"] != request.form["confirm-password"]:
+                return redirect("/account?error=match_pass")
+            if bcrypt.check_password_hash(user_data["Password"], request.form["current-password"]):
+                flask_login.logout_user()
+                pass_hash = bcrypt.generate_password_hash(request.form["new-password"])
+                put_api_data("users", user_data["id"], {"Password":pass_hash})
+                return redirect("/")
+            else:
+                return redirect("/account?error=bad_pass")
+
 
 @app.route('/logout')
 def logout():

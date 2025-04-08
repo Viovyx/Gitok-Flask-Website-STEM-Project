@@ -33,7 +33,7 @@
 
             <!-- Content -->
             <div class="page-content">
-                <h1>Account</h1>
+                <h1>Account - {{ user.FirstName }} {{ user.LastName }}</h1>
                 <p class="subscript">
                     Manage your personal info, preferences, and security
                     options.
@@ -41,31 +41,32 @@
                 <hr />
 
                 <div class="account-wrapper">
+                    <p class="error hidden" id="error-message"></p>
                     <h2 id="profile">Update profile</h2>
                     <!-- Add js functionality -->
-                    <form action="#" method="POST">
+                    <form action="/account?action=profile" method="POST">
                         <label for="first-name">First name</label>
                         <input
                             type="text"
                             id="first-name"
                             name="first-name"
-                            placeholder="{current-first-name}"
+                            placeholder="{{ user.FirstName }}"
                         />
                         <label for="last-name">Last name</label>
                         <input
                             type="text"
                             id="last-name"
                             name="last-name"
-                            placeholder="{curren-last-name}"
+                            placeholder="{{ user.LastName }}"
                         />
                         <label for="email">Email</label>
                         <input
                             type="email"
                             id="email"
                             name="email"
-                            placeholder="{curent-email}"
+                            placeholder="{{ user.Email }}"
                         />
-                        <label for="password">Confirm password</label>
+                        <label for="password">Confirm password <b>*</b></label>
                         <input
                             type="password"
                             id="password"
@@ -78,15 +79,15 @@
                     <hr />
                     <h2 id="password">Change password</h2>
                     <!-- Add js functionality -->
-                    <form action="#" method="POST">
-                        <label for="current-password">Current password</label>
+                    <form action="/account?action=pass" method="POST">
+                        <label for="current-password">Current password <b>*</b></label>
                         <input
                             type="password"
                             id="current-password"
                             name="current-password"
                             required
                         />
-                        <label for="new-password">New password</label>
+                        <label for="new-password">New password <b>*</b></label>
                         <input
                             type="password"
                             id="new-password"
@@ -94,7 +95,7 @@
                             required
                         />
                         <label for="confirm-password"
-                            >Confirm new password</label
+                            >Confirm new password <b>*</b></label
                         >
                         <input
                             type="password"
@@ -117,4 +118,5 @@
     </body>
 
     <script src="/static/js/loadTheme.js"></script>
+    <script src="/static/js/handleError.js"></script>
 </html>

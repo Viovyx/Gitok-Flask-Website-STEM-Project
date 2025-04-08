@@ -277,6 +277,10 @@ label {
     color: var(--copy);
 }
 
+label > b {
+    color: var(--error);
+}
+
 input:hover {
     transition: 0.2s ease;
     border-color: var(--primary);
@@ -288,7 +292,7 @@ input:focus {
 }
 
 input::placeholder {
-    color: var(--copy);
+    color: var(--copy-lighter);
 }
 
 form button {
