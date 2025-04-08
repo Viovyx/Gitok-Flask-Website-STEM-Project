@@ -49,14 +49,14 @@
                     <span class="legend-warning">door unknown</span>
                     <span class="legend-error">door closed</span>
                 </div>
-                <div class="data-grid">
+                <div class="data-grid" id="doors">
                     {% for door in doors %}
                         <!-- TODO: update door state with db -->
                         <div class="item warning" id="door-{{ door.id }}">
                             <h3>{{ door.Name }} (id: {{ door.id }})</h3>
-                            <ul>
+                            <ul id="door-ul-{{ door.id }}">
                                 {% for user in door.Users %}
-                                    <li>{{ user.FirstName }} {{ user.LastName }} (id: {{ user.id }})</li>
+                                    <li id="user-{{ user.id }}">{{ user.FirstName }} {{ user.LastName }} (id: {{ user.id }})</li>
                                 {% endfor %}
                             </ul>
                         </div>
@@ -81,7 +81,7 @@
 
     <script src="/static/js/loadTheme.js"></script>
     <!-- <script src="/static/js/placeholder-graphs.js"></script> -->
-    <script src="/static/js/sensorGraph.js"></script>
+    <script src="/static/js/handleLiveData.js"></script>
     <script>
         const data = JSON.parse('{{ data | tojson }}')
         setData(data)

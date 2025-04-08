@@ -282,10 +282,17 @@ def handle_mqtt_message(client, userdata, message):
     match message.topic:
         case "Tapgate/feeds/scanner.action":
             action_data = json.loads(message.payload.decode())  # {"user":1, "action":1, "door_ip":"192.168.0.11"}
+            user_id = action_data["user"]
+            action = action_data["action"]
+
+            user_info = get_api_data("users", "id", user_id)[0]
+            new_door_id = get_api_data("devices", "IP", action_data["door_ip"])[0]["id"]
+            socketio.emit("updateDoorUsers", {"user_id":user_id, "first_name":user_info["FirstName"], "last_name":user_info["LastName"], "new_door":new_door_id})
+
             log_obj = create_log_obj(action_data)
             post_api_data("logs", log_obj)
 
-            data = get_api_table("data")
+            print(data)
             update_data(data, log_obj)
 
             action = log_obj["Action"]

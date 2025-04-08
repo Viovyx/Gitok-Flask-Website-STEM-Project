@@ -144,3 +144,15 @@ socket.on("updateSensorGraph", function (msg) {
   }
   addData(msg.date, msg.value);
 });
+
+// Doors
+socket.on("updateDoorUsers", function (msg) {
+  var old_user = document.getElementById("user-" + msg.user_id);
+  old_user.parentNode.removeChild(old_user);  // Remove user from old door
+
+  var new_door = document.getElementById("door-ul-" + msg.new_door);
+  var new_user = document.createElement("li");
+  new_user.appendChild(document.createTextNode(msg.first_name + " " + msg.last_name + " (id: " + msg.user_id + ")"));
+  new_user.id = "user-" + msg.user_id;
+  new_door.append(new_user);
+})
