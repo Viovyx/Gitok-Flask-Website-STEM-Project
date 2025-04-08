@@ -23,6 +23,16 @@
                 <h1>Log</h1>
                 <p class="subscript">Track actions and monitor changes.</p>
                 <hr />
+                <div class="log-selector">
+                    <div>
+                        <label for="page-selector">Page:</label>
+                        <input type="number" value="{{ info.page }}" id="page-selector">
+                    </div>
+                    <div>
+                        <label for="pp-selector">Items/Page:</label>
+                        <input type="number" value="{{ info.pp }}" id="pp-selector">
+                    </div>
+                </div>
                 <table class="log-table" id="log-table">
                     <tr>
                         <th>Action</th>
@@ -49,4 +59,5 @@
     </body>
 
     <script src="/static/js/loadTheme.js"></script>
+    <script src="/static/js/handleLogs.js"></script>
 </html>

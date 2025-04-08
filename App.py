@@ -246,15 +246,34 @@ def live_data():
                             data=last_week_data,
                             doors=doors)
 
-@app.route('/log')
+@app.route('/log', methods=['GET', 'POST'])
 @flask_login.login_required
 def log():
+    logs = get_api_table("logs")[::-1]
+    if request.method == "GET":
+        page = 1
+        pp = 20
+    else:
+        try:
+            page = int(request.form["page"])
+            pp = int(request.form["pp"])
+        except:
+            return redirect("/log")
+    
+    start = pp * (page-1)
+    end = start + pp
+    logs = logs[start:end]
+
+    if not len(logs):
+        return redirect("/log")
+
     return render_template('log.html',
                             header=get_element("header"),
                             footer=get_element("footer"),
                             moon_toggle=get_element("moon-toggle"),
                             sun_toggle=get_element("sun-toggle"),
-                            logs=get_api_table("logs")[::-1])
+                            logs=logs,
+                            info={"page":page, "pp":pp})
 
 @app.route('/account', methods=['GET', 'POST'])
 @flask_login.login_required

@@ -565,6 +565,19 @@ form button:active {
     color: var(--secondary-content);
 }
 
+.log-selector {
+    display: flex;
+    gap: 5em;
+}
+
+.log-selector > div > input {
+    width: fit-content;
+}
+
+.log-selector > div > label {
+    margin-right: 1em;
+}
+
 
 /* Account Page */
 .account-wrapper > form {
