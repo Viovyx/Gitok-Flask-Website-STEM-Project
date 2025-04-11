@@ -270,6 +270,19 @@ input {
     background-color: var(--foreground);
     color: var(--copy);
 }
+input[type="checkbox"]:hover {
+    cursor: pointer;
+}
+
+select {
+    width: 100%;
+    padding: 0.5rem;
+    border-radius: 5px;
+    margin-bottom: 1rem;
+    border: 2px solid var(--border);
+    background-color: var(--foreground);
+    color: var(--copy);
+}
 
 label {
     font-weight: 500;
@@ -294,6 +307,14 @@ input:focus {
 input::placeholder {
     color: var(--copy-lighter);
 }
+
+input[type="checkbox"] {
+    width: fit-content;
+    margin-left: 1em;
+    transform: scale(2);
+    background-color: var(--error);
+}
+
 
 form button {
     width: 100%;
@@ -323,7 +344,6 @@ form button:active {
     transition: 0.1s ease;
     transform: scale(0.95);
 }
-
 
 /* Error */
 .error::before {
@@ -383,13 +403,6 @@ form button:active {
 
 .edit-panel > div > .subscript {
     margin: -1em 0 1em 0;
-}
-
-.delete-item {
-    width: fit-content;
-    margin-left: 1em;
-    transform: scale(2);
-    background-color: var(--error);
 }
 
 .item#create {

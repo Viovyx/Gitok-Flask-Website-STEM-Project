@@ -125,7 +125,7 @@ function generateOptions(fields, select_items = null, item = null) {
                         /> 
                         ${
                             value["type"] == "checkbox"
-                                ? `<input type="hidden" name=${key} id=${key} value=${value["default"]}>`
+                                ? `<input type="hidden" name=${key} id=${key} value=${value["default"]}><br>`
                                 : ""
                         }
                     `;
