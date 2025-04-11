@@ -105,6 +105,10 @@
   background-color: transparent;
 }
 
+.log-selector {
+  justify-content: space-evenly;
+}
+
 .log-table {
   width: calc(100vw - 2em);
 }
