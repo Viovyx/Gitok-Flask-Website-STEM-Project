@@ -25,7 +25,10 @@ function openPanel(name, item = null, select_items = null) {
 
     // id is given => edit item
     if (item) {
+        table_name = fields["table"]
+        id_num = item["id"]
         delete_form.classList.remove("hidden");
+        
         title.textContent = `Edit Item - ${name} (id: ${item["id"]})`;
         action.value = "edit";
 
@@ -64,9 +67,6 @@ function openPanel(name, item = null, select_items = null) {
                 Cancel
             </button>
         `;
-
-    table_name = fields["table"]
-    id_num = item["id"]
     
     panel.classList.remove("hidden");
 }
