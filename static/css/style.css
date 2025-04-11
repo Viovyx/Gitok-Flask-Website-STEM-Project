@@ -335,6 +335,10 @@ form button {
     margin-bottom: 1rem;
 }
 
+form button:not(.cancel) {
+    margin-top: 1em;
+}
+
 form button.cancel {
     background-color: var(--error);
     color: var(--error-content);
