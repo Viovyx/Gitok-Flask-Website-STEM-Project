@@ -49,7 +49,7 @@ def get_user_data(email):
     api_url = api_base_url + f"users?filter=Email,eq,{email}"
     response = requests.get(api_url, headers=headers)
     response = response.json()['records']
-    return response
+    return response if len(response) else False
 
 def get_api_table(table):
     api_url = api_base_url + table
@@ -197,6 +197,8 @@ def login():
     
     email = request.form['email']
     user_data = get_user_data(email)
+    if not user_data:
+        return redirect('/?error=bad_login')
 
     if len(user_data) != 0:
         group_info = get_api_data("groups", "id", user_data[0]["Group_id"])
@@ -235,7 +237,7 @@ def home():
     fields = request.form
     table = fields["table"]
     id = int(fields["id"])
-    
+
     if fields["delete_input"] == "true":
         delete_api_data(fields["table"], fields["id"])
         return redirect("/home")

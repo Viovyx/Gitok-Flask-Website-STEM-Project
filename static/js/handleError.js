@@ -7,7 +7,7 @@ if (error) {
     switch (error) {
         case "bad_login":
             errorMessage.textContent =
-                "Invalid email or password. Please try again.";
+                "Wrong email or password. Please try again.";
             break;
         case "bad_pass":
             errorMessage.textContent = "Wrong password. Please try again.";
