@@ -185,9 +185,11 @@
                 <div class="data-grid">
                     {% for user in users %}
                     <div
-                        class="item"
+                        class="item {% if user.id == 1 %}hidden{% endif %}"
                         id="user-{{ user.id }}"
-                        onclick='openPanel("users", {{ user|tojson }}, {{ groups|tojson }})'
+                        {% if user.id != 1 %}
+                            onclick='openPanel("users", {{ user|tojson }}, {{ groups|tojson }})'
+                        {% endif %}
                     >
                         <h3 id="name">Name: {{ user.FirstName }} {{ user.LastName }}</h3>
                         <ul>
@@ -231,9 +233,11 @@
                 <div class="data-grid">
                     {% for group in groups %}
                     <div
-                        class="item"
+                        class="item {% if group.id == 1 %}hidden{% endif %}"
                         id="group-{{ group.id }}"
-                        onclick='openPanel("groups", {{ group|tojson }})'
+                        {% if group.id != 1 %}
+                            onclick='openPanel("groups", {{ group|tojson }})'
+                        {% endif %}
                     >
                         <h3 id="name">Name: {{ group.Groupname }}</h3>
                         <ul>
