@@ -157,7 +157,7 @@ class User(flask_login.UserMixin):
 
 @login_manager.user_loader
 def user_loader(email):
-    if len(get_user_data(email)) == 0:
+    if not get_user_data(email):
         return
 
     user = User()
@@ -170,7 +170,7 @@ def request_loader(request):
     if email == None:
         return
 
-    if len(get_user_data(email)) == 0:
+    if not get_user_data(email):
         return
 
     user = User()
