@@ -36,6 +36,10 @@ body {
     display: none !important;
 }
 
+.mobile {
+    display: none !important;
+}
+
 .row {
     display: flex;
     flex-direction: row;
@@ -388,7 +392,7 @@ form button:active {
     z-index: 1;
 }
 
-.edit-panel .panel-wrapper {
+.panel-wrapper {
     position: absolute;
     left: 0;
     right: 0;
