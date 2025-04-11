@@ -5,6 +5,10 @@
 @import url("/static/css/colors.css");
 
 /* --- Main --- */
+.header {
+  height: 5em;
+}
+
 .page-wrapper {
   grid-template-columns: 1fr;
 }
@@ -14,7 +18,11 @@
 }
 
 .page-content {
-  max-height: 70vh;
+  max-height: 100%;
+  margin: 0;
+  overflow-y: unset;
+  border-radius: 0;
+  border: none;
 }
 
 .header-nav {
@@ -24,7 +32,7 @@
 .hamburger-menu {
   display: block;
   position: absolute;
-  top: 1.3rem;
+  top: 1.8rem;
   right: 1rem;
   z-index: 200;
 }
@@ -63,5 +71,16 @@
 }
 
 .edit-panel .panel-wrapper {
-  margin: 0 5vw;
+  top: 5em;
+  margin: 0;
+  width: 100vw;
+  height: 100vh;
+  border-radius: 0;
+  border: none;
+  box-shadow: none;
+  z-index: 200;
+}
+
+.edit-panel {
+  background-color: transparent;
 }

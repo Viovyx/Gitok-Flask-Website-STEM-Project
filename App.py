@@ -210,7 +210,7 @@ def login():
 @app.route('/home', methods=['GET', 'POST'])
 @flask_login.login_required
 def home():
-    # TODO: change deleting method (seperate form) ; fix styling for new inputs ; make panels mobile accessible
+    # TODO: change deleting method (seperate form)
 
     if request.method == 'GET':
         user = get_user_data(flask_login.current_user.id)[0]
