@@ -28,8 +28,9 @@ body {
 }
 
 .subscript {
-    font-size: 0.9rem;
+    font-size: 1em;
     color: var(--copy-lighter);
+    margin-bottom: 0.5em;
 }
 
 .hidden {
@@ -52,7 +53,7 @@ hr {
     border: 0;
     height: var(--line);
     background-color: var(--border);
-    margin: 1.5rem 0;
+    margin: 1rem 0 1.5rem 0;
 }
 
 h2 {
@@ -403,10 +404,6 @@ form button:active {
     border: 2px solid var(--border);
     border-radius: 10px;
     box-shadow: 0 0 10px var(--border);
-}
-
-.edit-panel > div > .subscript {
-    margin: -1em 0 1em 0;
 }
 
 .item#create {
