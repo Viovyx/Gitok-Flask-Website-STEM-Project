@@ -293,18 +293,11 @@ def live_data():
 @flask_login.login_required
 def log():
     logs = get_api_table("logs")[::-1]
-    if request.method == "GET":
-        page = 1
-        pp = 20
-    else:
-        try:
-            page = int(request.form["page"])
-            pp = int(request.form["pp"])
-        except:
-            return redirect("/log")
-    
-    start = pp * (page-1)
-    end = start + pp
+    page = int(request.args.get("page", 1))
+    shown = int(request.args.get("shown", 20))
+
+    start = shown * (page-1)
+    end = start + shown
     logs = logs[start:end]
 
     if not len(logs):
@@ -316,7 +309,7 @@ def log():
                             moon_toggle=get_element("moon-toggle"),
                             sun_toggle=get_element("sun-toggle"),
                             logs=logs,
-                            info={"page":page, "pp":pp})
+                            info={"page":page, "shown":shown})
 
 @app.route('/account', methods=['GET', 'POST'])
 @flask_login.login_required

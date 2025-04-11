@@ -20,7 +20,7 @@
         <div class="page-wrapper">
             <!-- Content -->
             <div class="page-content">
-                <h1>Log - Page {{ info.page }}</h1>
+                <h1>Log - Page {{ info.page }} - {{ logs|length }} Items Displayed</h1>
                 <p class="subscript">Track actions and monitor changes. Customize how many items are displayed.</p>
                 <hr />
                 <div class="log-selector">
@@ -29,8 +29,8 @@
                         <input type="number" value="{{ info.page }}" id="page-selector">
                     </div>
                     <div>
-                        <label for="pp-selector">Items/Page:</label>
-                        <input type="number" value="{{ info.pp }}" id="pp-selector">
+                        <label for="shown-selector">Items/Page:</label>
+                        <input type="number" value="{{ info.shown }}" id="shown-selector">
                     </div>
                 </div>
                 <table class="log-table" id="log-table">
