@@ -93,9 +93,11 @@
                 <div class="data-grid">
                     {% for door in doors %}
                         <div
-                            class="item"
+                            class="item {% if door.id == 1 %}hidden{% endif %}"
                             id="door-{{ door.id }}"
-                            onclick='openPanel("doors", {{ door|tojson }})'
+                            {% if door.id != 1 %}
+                                onclick='openPanel("doors", {{ door|tojson }})'
+                            {% endif %}
                         >
                             <h3 id="name">Name: {{ door.Name }}</h3>
                             <ul>

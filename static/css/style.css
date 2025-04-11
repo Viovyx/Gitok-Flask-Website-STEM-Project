@@ -33,7 +33,7 @@ body {
 }
 
 .hidden {
-    display: none;
+    display: none !important;
 }
 
 .row {
@@ -544,7 +544,6 @@ form button:active {
     list-style-type: none;
     padding: 1rem;
 }
-
 
 /* Log Page */
 .log-table{
