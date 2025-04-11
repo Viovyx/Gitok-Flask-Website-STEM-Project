@@ -43,6 +43,7 @@
                 <p class="subscript">
                     Manage your doors and scanners with ease.
                 </p>
+                <p class="error hidden" id="error-message"></p>
                 <hr />
 
                 <h2 id="keycards">Keycards</h2>
@@ -51,7 +52,7 @@
                     <div
                         class="item"
                         id="keycard-{{ keycard.id }}"
-                        onclick="window.location.href = window.location.pathname + '?type=edit&table=cards&id={{ keycard.id }}'"
+                        onclick='openPanel("keycards", {{ keycard|tojson }}, {{ users|tojson }})'
                     >
                         <h3 id="name">CardUID: {{ keycard.CardUID }}</h3>
                         <ul>
@@ -62,7 +63,7 @@
                     </div>
                     {% endfor %}
 
-                    <div class="item" id="create" onclick="openPanel('create')">
+                    <div class="item" id="create" onclick='openPanel("keycards", null, {{ users|tojson }})'>
                         <svg
                             class="add-icon"
                             viewBox="0 0 24 24"
@@ -90,23 +91,21 @@
 
                 <h2 id="doors">Doors</h2>
                 <div class="data-grid">
-                    {% for door in devices %}
-                        {% if door.Type == "lock" %}
-                            <div
-                                class="item"
-                                id="door-{{ door.id }}"
-                                onclick="openPanel('edit')"
-                            >
-                                <h3 id="name">Name: {{ door.Name }}</h3>
-                                <ul>
-                                    <li id="id">ID: {{ door.id }}</li>
-                                    <li id="access">Accesslevel: {{ door.Access }}</li>
-                                </ul>
-                            </div>
-                        {% endif %}
+                    {% for door in doors %}
+                        <div
+                            class="item"
+                            id="door-{{ door.id }}"
+                            onclick='openPanel("doors", {{ door|tojson }})'
+                        >
+                            <h3 id="name">Name: {{ door.Name }}</h3>
+                            <ul>
+                                <li id="id">ID: {{ door.id }}</li>
+                                <li id="access">Accesslevel: {{ door.Access }}</li>
+                            </ul>
+                        </div>
                     {% endfor %}
 
-                    <div class="item" id="create" onclick="openPanel('create')">
+                    <div class="item" id="create" onclick="openPanel('doors')">
                         <svg
                             class="add-icon"
                             viewBox="0 0 24 24"
@@ -134,23 +133,21 @@
                 <hr />
                 <h2 id="scanners">Scanners</h2>
                 <div class="data-grid">
-                    {% for scanner in devices %}
-                        {% if scanner.Type == "scanner" %}
-                            <div
-                                class="item"
-                                id="scanner-{{ scanner.id }}"
-                                onclick="openPanel('edit')"
-                            >
-                                <h3 id="name">Name: {{ scanner.Name }}</h3>
-                                <ul>
-                                    <li id="id">ID: {{ scanner.id }}</li>
-                                    <li id="access">Accesslevel: {{ scanner.Access }}</li>
-                                </ul>
-                            </div>
-                        {% endif %}
+                    {% for scanner in scanners %}
+                        <div
+                            class="item"
+                            id="scanner-{{ scanner.id }}"
+                            onclick='openPanel("scanners", {{ scanner|tojson }}, {{ doors|tojson }})'
+                        >
+                            <h3 id="name">Name: {{ scanner.Name }}</h3>
+                            <ul>
+                                <li id="id">ID: {{ scanner.id }}</li>
+                                <li id="access">Accesslevel: {{ scanner.Access }}</li>
+                            </ul>
+                        </div>
                     {% endfor %}
 
-                    <div class="item" id="create" onclick="openPanel('create')">
+                    <div class="item" id="create" onclick='openPanel("scanners", null, {{ doors|tojson }})'>
                         <svg
                             class="add-icon"
                             viewBox="0 0 24 24"
@@ -182,7 +179,7 @@
                     <div
                         class="item"
                         id="user-{{ user.id }}"
-                        onclick="openPanel('edit')"
+                        onclick='openPanel("users", {{ user|tojson }}, {{ groups|tojson }})'
                     >
                         <h3 id="name">Name: {{ user.FirstName }} {{ user.LastName }}</h3>
                         <ul>
@@ -195,7 +192,7 @@
                     </div>
                     {% endfor %}
 
-                    <div class="item" id="create" onclick="openPanel('create')">
+                    <div class="item" id="create" onclick='openPanel("users", null, {{ groups|tojson }})'>
                         <svg
                             class="add-icon"
                             viewBox="0 0 24 24"
@@ -227,7 +224,7 @@
                     <div
                         class="item"
                         id="group-{{ group.id }}"
-                        onclick="openPanel('edit')"
+                        onclick='openPanel("groups", {{ group|tojson }})'
                     >
                         <h3 id="name">Name: {{ group.Groupname }}</h3>
                         <ul>
@@ -238,7 +235,7 @@
                     </div>
                     {% endfor %}
 
-                    <div class="item" id="create" onclick="openPanel('create')">
+                    <div class="item" id="create" onclick="openPanel('groups')">
                         <svg
                             class="add-icon"
                             viewBox="0 0 24 24"
@@ -265,10 +262,8 @@
             </div>
         </div>
 
-        <!-- Edit Item Panel -->
-        <span id="edit-panel" class="hidden">{{ edit_panel|safe }}</span>
-        <!-- Create Item Panel -->
-        <span id="create-panel" class="hidden">{{ create_panel|safe }}</span>
+        <!-- Panel Item -->
+        <span id="edit-panel" class="hidden">{{ panel|safe }}</span>
 
         <!-- Theme Toggle -->
         <span id="moon-toggle">{{ moon_toggle|safe }}</span>
@@ -279,5 +274,6 @@
     </body>
 
     <script src="/static/js/loadTheme.js"></script>
+    <script src="/static/js/handleError.js"></script>
     <script src="/static/js/handlePanels.js"></script>
 </html>

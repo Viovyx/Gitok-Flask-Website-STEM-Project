@@ -1,0 +1,165 @@
+{
+    "keycards": {
+        "table": "cards",
+        "id": {
+            "type": "number",
+            "index": "id",
+            "default": 0
+        },
+        "CardUID": {
+            "type": "text",
+            "index": 0,
+            "default": "[255,255,255,255]"
+        },
+        "UniquePass": {
+            "type": "text",
+            "index": "unique",
+            "default": 0
+        },
+        "User_id": {
+            "type": "select",
+            "index": "User_id",
+            "index_name": "Email",
+            "default": 0
+        }
+    },
+    "doors": {
+        "table": "devices",
+        "id": {
+            "type": "number",
+            "index": "fixed",
+            "default": 0
+        },
+        "Type": {
+            "type": "text",
+            "index": "fixed",
+            "default": "lock"
+        },
+        "Name": {
+            "type": "text",
+            "index": "unique",
+            "default": 0
+        },
+        "Access": {
+            "type": "number",
+            "index": 0,
+            "default": "0"
+        },
+        "IP": {
+            "type": "text",
+            "index": 0,
+            "default": "192.168.0.1"
+        },
+        "Door_Id": {
+            "type": "number",
+            "index": "fixed",
+            "default": "1"
+        },
+        "Status": {
+            "type": "number",
+            "index": "fixed",
+            "default": "0"
+        }
+    },
+    "scanners": {
+        "table": "devices",
+        "id": {
+            "type": "number",
+            "index": "fixed",
+            "default": 0
+        },
+        "Type": {
+            "type": "text",
+            "index": "fixed",
+            "default": "scanner"
+        },
+        "Name": {
+            "type": "text",
+            "index": "unique",
+            "default": 0
+        },
+        "Access": {
+            "type": "number",
+            "index": "fixed",
+            "default": "0"
+        },
+        "IP": {
+            "type": "text",
+            "index": 0,
+            "default": "192.168.0.1"
+        },
+        "Door_Id": {
+            "type": "select",
+            "index": "Door_Id",
+            "index_name": "Name",
+            "default": 0
+        },
+        "Status": {
+            "type": "number",
+            "index": "fixed",
+            "default": "0"
+        }
+    },
+    "users": {
+        "table": "users",
+        "id": {
+            "type": "number",
+            "index": "fixed",
+            "default": 0
+        },
+        "Email": {
+            "type": "email",
+            "index": "unique",
+            "default": 0
+        },
+        "Password": {
+            "type": "password",
+            "index": 0,
+            "default": 0
+        },
+        "FirstName": {
+            "type": "text",
+            "index": 0,
+            "default": 0
+        },
+        "LastName": {
+            "type": "text",
+            "index": 0,
+            "default": 0
+        },
+        "Group_id": {
+            "type": "select",
+            "index": "Group_id",
+            "index_name": "Groupname",
+            "default": 0
+        },
+        "Current_Door": {
+            "type": "number",
+            "index": "fixed",
+            "default": "1"
+        }
+    },
+    "groups": {
+        "table": "groups",
+        "id": {
+            "type": "number",
+            "index": "fixed",
+            "default": 0
+        },
+        "Groupname": {
+            "type": "text",
+            "index": "unique",
+            "default": 0
+        },
+        "Admin": {
+            "type": "checkbox",
+            "index": 0,
+            "default": false
+        },
+        "Access": {
+            "type": "number",
+            "index": 0,
+            "default": "0"
+        }
+    }
+}

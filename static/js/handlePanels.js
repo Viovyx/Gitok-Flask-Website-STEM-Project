@@ -1,35 +1,147 @@
-const editPanel = document.getElementById('edit-panel');
-const createPanel = document.getElementById('create-panel');
+var panel = document.getElementById("edit-panel");
+var panel_fields = {};
+fetch("/static/js/panel_fields.json")
+    .then((response) => response.json())
+    .then((json) => (panel_fields = json));
 
-function openPanel(type) {
-    switch (type) {
-        case 'edit':
-            editPanel.classList.remove('hidden');
-            break;
-        case 'create':
-            createPanel.classList.remove('hidden');
-            break;
-        default:
-            console.error('Invalid panel type:', type);
+function openPanel(name, item = null, select_items = null) {
+    const fields = panel_fields[name];
+    if (!fields) {
+        console.log(`[ERROR] Found format for '${name} (id: ${item["id"]})'`);
+        return;
     }
+
+    var title = document.getElementById("title");
+    var form = document.getElementById("form");
+    form.innerHTML = "";
+
+    const action = document.createElement("input");
+    action.type = "hidden";
+    action.name = "action";
+
+    // id is given => edit item
+    if (item) {
+        title.textContent = `Edit Item - ${name} (id: ${item["id"]})`;
+        action.value = "edit";
+
+        form.innerHTML += `
+            <label for="delete_input">Delete this item?</label>
+            <input type="checkbox" id="delete_input" name="delete_input" class="delete-item" value="true">
+            <input type="hidden" name="delete_input" value="false">
+            <br>
+        `;
+
+        const { id, optionsHTML } = generateOptions(fields, select_items, item);
+        form.appendChild(id);
+        form.innerHTML += optionsHTML;
+    }
+    // id is not given => create item
+    else {
+        title.textContent = "Create Item - " + name;
+        action.value = "create";
+
+        const delete_input = document.createElement("input");
+        delete_input.type = "hidden";
+        delete_input.name = "delete_input";
+        delete_input.value = "false";
+        form.appendChild(delete_input);
+
+        const { id, optionsHTML } = generateOptions(fields, select_items);
+        form.appendChild(id);
+        form.innerHTML += optionsHTML;
+    }
+
+    const table = document.createElement("input");
+    table.type = "hidden";
+    table.name = "table";
+    table.value = fields["table"];
+    form.appendChild(table);
+    form.appendChild(action);
+
+    form.innerHTML += `
+            <button type="submit">Submit</button>
+            <button type="button" class="cancel" onclick="closePanel()">
+                Cancel
+            </button>
+        `;
+
+    panel.classList.remove("hidden");
 }
 
-function closePanel(type) {
-    switch (type) {
-        case 'edit':
-            editPanel.classList.add('hidden');
-            break;
-        case 'create':
-            createPanel.classList.add('hidden');
-            break;
-        default:
-            console.error('Invalid panel type:', type);
-    }
+function closePanel() {
+    panel.classList.add("hidden");
 }
 
-function deleteItem() {
-    const confirmed = confirm('Are you sure you want to delete this item?');
-    if (confirmed) {
-        closePanel('edit');
+function generateOptions(fields, select_items = null, item = null) {
+    const id = document.createElement("input");
+    id.type = "hidden";
+    id.name = "id";
+    optionsHTML = "";
+
+    for (const [key, value] of Object.entries(fields)) {
+        if (key != "table") {
+            if (key == "id") {
+                id.value = item ? item["id"] : value["default"];
+            } else if (value["index"] != "fixed") {
+                optionsHTML += `<label for=${key}>${key}: <b>*</b></label>`;
+
+                if (value["index"] == "unique") {
+                    optionsHTML += `<p class="subscript">Must be unique accross all ${fields["table"]}!</p>`
+                }
+
+                if (value["type"] == "select") {
+                    optionsHTML += `<select name=${key} id=${key}>`;
+                    for (const option of select_items) {
+                        optionsHTML += `<option value=${option["id"]} ${
+                            item
+                                ? item[value["index"]] == option["id"]
+                                    ? "selected"
+                                    : ""
+                                : ""
+                        }>${option["id"]} - ${
+                            option[value["index_name"]]
+                        }</option>`;
+                    }
+                    optionsHTML += `</select>`;
+                } else {
+                    optionsHTML += `
+                        <input
+                            type=${value["type"]}
+                            id=${key}
+                            name=${key}
+                            placeholder=${
+                                item && value["type"] != "password"
+                                    ? item[key]
+                                    : value["default"]
+                                    ? value["default"]
+                                    : key
+                            }
+                            ${
+                                item && value["type"] != "password"
+                                    ? "value=" + item[key]
+                                    : ""
+                            }
+                            ${value["type"] != "checkbox" ? "required" : item && item[key] ? "checked" : ""}
+                        /> 
+                        ${
+                            value["type"] == "checkbox"
+                                ? `<input type="hidden" name=${key} id=${key} value=${value["default"]}>`
+                                : ""
+                        }
+                    `;
+                }
+            } else if (!item) {
+                optionsHTML += `
+                        <input
+                            type=hidden
+                            id=${key}
+                            name=${key}
+                            value=${value["default"]}
+                        />
+                    `;
+            }
+        }
     }
+
+    return { id, optionsHTML };
 }

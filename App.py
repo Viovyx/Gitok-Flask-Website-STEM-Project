@@ -24,7 +24,7 @@ app.config['MQTT_TLS_ENABLED'] = False
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 
 headers = {"X-API-KEY":os.getenv('API_KEY')}
-api_base_url = "https://api.tapgate.tech/api.php/records/"
+api_base_url = os.getenv('API_URL')
 
 mqtt = Mqtt(app)
 socketio = SocketIO(app, cors_allowed_origins='*')
@@ -65,12 +65,23 @@ def get_api_data(table, key, value):
 
 def post_api_data(table, data):
     api_url = api_base_url + table
-    response = requests.post(api_url, data, headers=headers)
-    return response
+    try:
+        response = requests.post(api_url, data, headers=headers)
+        return response
+    except:
+        return False
 
 def put_api_data(table, id, data):
     api_url = api_base_url + f"{table}/{id}"
-    response = requests.put(api_url, data, headers=headers)
+    try:
+        response = requests.put(api_url, data, headers=headers)
+        return response
+    except:
+        return False
+    
+def delete_api_data(table, id):
+    api_url = api_base_url + f"{table}/{id}"
+    response = requests.delete(api_url, headers=headers)
     return response
 
 def reset_door_states():
@@ -196,40 +207,69 @@ def login():
 
     return redirect('/?error=bad_login')
 
-@app.route('/home')
+@app.route('/home', methods=['GET', 'POST'])
 @flask_login.login_required
 def home():
-    user = get_user_data(flask_login.current_user.id)[0]
+    # TODO: change deleting method (seperate form) ; fix styling for new inputs ; make panels mobile accessible
 
-    panel_type = request.args.get("type")
-    table = request.args.get("table")
-    item_id = request.args.get("id")
-    panel = {}
+    if request.method == 'GET':
+        user = get_user_data(flask_login.current_user.id)[0]
+        devices=get_api_table("devices")
 
-    if panel_type and table and item_id:
-        try:
-            item_info = get_api_data(table, "id", item_id)[0]
-            item_info.pop("id")
-            panel = {
-                "type":panel_type,
-                "table":table,
-                "id":item_id,
-                "fields":[{"name":field, "current_value":item_info[field]} for field in item_info]
-            }
-            print(panel)  # debugging
-        except:
+        return render_template('home.html', 
+                                header=get_element("header"),
+                                footer=get_element("footer"),
+                                moon_toggle=get_element("moon-toggle"),
+                                sun_toggle=get_element("sun-toggle"),
+                                panel=get_element("panel"),
+                                name=f"{user['FirstName']} {user['LastName']}",
+                                keycards=get_api_table("cards"),
+                                scanners=[scanner for scanner in devices if scanner["Type"] == "scanner"],
+                                doors=[door for door in devices if door["Type"] == "lock"],
+                                users=get_api_table("users"),
+                                groups=get_api_table("groups"))
+    
+    fields = request.form
+    with open("./static/js/panel_fields.json") as f:
+        field_args = json.load(f)
+
+    if fields["delete_input"] == "true":
+        delete_api_data(fields["table"], fields["id"])
+        return redirect("/home")
+    else:
+        table = fields["table"]
+        id = int(fields["id"])
+        properties = [field_args[arg] for arg in field_args if field_args[arg]["table"] == table][0]
+        data = {}
+
+        for field in fields:
+            if field not in ("delete_input", "action", "table", "id"):
+                field_prop = properties[field]
+                value = fields[field]
+                
+                if field_prop["index"] == "unique":
+                    all_items = get_api_table(table)
+                    for item in all_items:
+                        if item[field] == value and item["id"] != id:
+                            return redirect('/home?error=duplicate_key')
+
+                match field_prop["type"]:
+                    case "checkbox":
+                        data[field] = 1 if value == "true" else 0
+                    case "number":
+                        data[field] = int(value)
+                    case "select":
+                        data[field] = int(value)
+                    case "password":
+                        data[field] = bcrypt.generate_password_hash(value)
+                    case _:
+                        data[field] = fields[field]
+        
+        if (put_api_data(table, id, data) if fields["action"] == "edit" else post_api_data(table, data)):
             return redirect("/home")
 
-    return render_template('home.html', 
-                            header=get_element("header"),
-                            footer=get_element("footer"),
-                            moon_toggle=get_element("moon-toggle"),
-                            sun_toggle=get_element("sun-toggle"),
-                            name=f"{user['FirstName']} {user['LastName']}",
-                            keycards=get_api_table("cards"),
-                            devices=get_api_table("devices"),
-                            users=get_api_table("users"),
-                            groups=get_api_table("groups"))
+        else:
+            return redirect("/home?error=invalid_field")
 
 @app.route('/live-data')
 @flask_login.login_required
@@ -324,7 +364,7 @@ def logout():
 # ------------------
 @mqtt.on_connect()
 def handle_connect(client, userdata, flags, rc):
-    print('MQTT Connected')
+    print('[MQTT] MQTT Connected')
     # Handle subscription here
     mqtt.subscribe("Tapgate/feeds/scanner.action")
     mqtt.subscribe("Tapgate/feeds/scanner.checkcard")
@@ -333,7 +373,7 @@ def handle_connect(client, userdata, flags, rc):
 
 @mqtt.on_message()
 def handle_mqtt_message(client, userdata, message):
-    print(message.topic, message.payload.decode())
+    print("[MQTT]", message.topic, message.payload.decode())
     # Handle received message here
     match message.topic:
         case "Tapgate/feeds/scanner.action":

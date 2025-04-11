@@ -8,12 +8,10 @@ function postUpdate(){
     const page = pageSelector.value;
     const pp = ppSelector.value;
 
-    // Create a form dynamically
     const form = document.createElement('form');
     form.method = 'POST';
     form.action = '/log';
 
-    // Add hidden input fields for the variables
     const pageInput = document.createElement('input');
     pageInput.type = 'hidden';
     pageInput.name = 'page';
@@ -24,11 +22,9 @@ function postUpdate(){
     ppInput.name = 'pp';
     ppInput.value = pp;
 
-    // Append inputs to the form
     form.appendChild(pageInput);
     form.appendChild(ppInput);
 
-    // Append the form to the body and submit it
     document.body.appendChild(form);
     form.submit();
 }

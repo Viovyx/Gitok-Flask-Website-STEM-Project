@@ -381,6 +381,17 @@ form button:active {
     box-shadow: 0 0 10px var(--border);
 }
 
+.edit-panel > div > .subscript {
+    margin: -1em 0 1em 0;
+}
+
+.delete-item {
+    width: fit-content;
+    margin-left: 1em;
+    transform: scale(2);
+    background-color: var(--error);
+}
+
 .item#create {
     display: flex;
     height: auto;
