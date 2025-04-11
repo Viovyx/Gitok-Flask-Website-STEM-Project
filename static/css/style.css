@@ -553,7 +553,6 @@ form button:active {
 .log-table{
     width: 100%;
     border-collapse: collapse;
-    table-layout: fixed;
     margin-bottom: 1rem;
 }
 
@@ -594,11 +593,11 @@ form button:active {
 
 .log-selector {
     display: flex;
-    gap: 5em;
+    gap: 3em;
 }
 
 .log-selector > div > input {
-    width: fit-content;
+    width: 100%;
 }
 
 .log-selector > div > label {

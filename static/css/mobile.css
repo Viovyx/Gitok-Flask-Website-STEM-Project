@@ -19,6 +19,7 @@
 
 .page-content {
   max-height: 100%;
+  padding: 1rem 1rem;
   margin: 0;
   overflow-y: unset;
   border-radius: 0;
@@ -102,4 +103,16 @@
 
 .edit-panel {
   background-color: transparent;
+}
+
+.log-table {
+  width: calc(100vw - 2em);
+}
+
+.data-grid {
+  justify-content: space-around;
+}
+
+.data-grid > .item#create {
+  width: 100%;
 }
