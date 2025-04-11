@@ -199,13 +199,16 @@ def login():
     user_data = get_user_data(email)
 
     if len(user_data) != 0:
-        if bcrypt.check_password_hash(user_data[0]['Password'], request.form['password']):
-            user = User()
-            user.id = email
-            flask_login.login_user(user)
-            return redirect('/home')
+        group_info = get_api_data("groups", "id", user_data[0]["Group_id"])
+        if group_info[0]["Admin"] == 1:
+            if bcrypt.check_password_hash(user_data[0]['Password'], request.form['password']):
+                user = User()
+                user.id = email
+                flask_login.login_user(user)
+                return redirect('/home')
+            return redirect('/?error=bad_login')
+        return redirect('/?error=no_admin')
 
-    return redirect('/?error=bad_login')
 
 @app.route('/home', methods=['GET', 'POST'])
 @flask_login.login_required

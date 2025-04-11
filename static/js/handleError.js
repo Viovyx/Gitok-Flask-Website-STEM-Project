@@ -24,6 +24,10 @@ if (error) {
             errorMessage.textContent =
                 "A value already exists. Please try again.";
             break;
+        case "no_admin":
+            errorMessage.textContent =
+                "Only admins are allowed to log in to the webpanel.";
+            break;
         default:
             errorMessage.classList.add("hidden");
             alert(`An error occurred without an error message (${error}). `);
