@@ -25,10 +25,10 @@ function openPanel(name, item = null, select_items = null) {
 
     // id is given => edit item
     if (item) {
-        table_name = fields["table"]
-        id_num = item["id"]
+        table_name = fields["table"];
+        id_num = item["id"];
         delete_form.classList.remove("hidden");
-        
+
         title.textContent = `Edit Item - ${name} (id: ${item["id"]})`;
         action.value = "edit";
 
@@ -51,7 +51,7 @@ function openPanel(name, item = null, select_items = null) {
     delete_input.type = "hidden";
     delete_input.name = "delete_input";
     delete_input.value = "false";
-    
+
     const table = document.createElement("input");
     table.type = "hidden";
     table.name = "table";
@@ -67,7 +67,7 @@ function openPanel(name, item = null, select_items = null) {
                 Cancel
             </button>
         `;
-    
+
     panel.classList.remove("hidden");
 }
 
@@ -81,11 +81,18 @@ function generateOptions(fields, select_items = null, item = null) {
         if (key != "table") {
             if (key == "id") {
                 id.value = item ? item["id"] : value["default"];
-            } else if (value["index"] != "fixed") {
+            } else if (
+                value["index"] != "fixed" &&
+                (value["type"] != "password" || !item)
+            ) {
                 optionsHTML += `<label for=${key}>${key}: <b>*</b></label>`;
 
+                if (value["type"] == "password") {
+                    optionsHTML += '<p class="subscript">This can only be set once! Changes have to be made by owner account.</p>'
+                }
+
                 if (value["index"] == "unique") {
-                    optionsHTML += `<p class="subscript">Must be unique accross all ${fields["table"]}!</p>`
+                    optionsHTML += `<p class="subscript">Must be unique accross all ${fields["table"]}!</p>`;
                 }
 
                 if (value["type"] == "select") {
@@ -109,7 +116,7 @@ function generateOptions(fields, select_items = null, item = null) {
                             id=${key}
                             name=${key}
                             placeholder=${
-                                item && value["type"] != "password"
+                                item
                                     ? item[key]
                                     : value["default"]
                                     ? value["default"]
@@ -120,7 +127,13 @@ function generateOptions(fields, select_items = null, item = null) {
                                     ? "value=" + item[key]
                                     : ""
                             }
-                            ${value["type"] != "checkbox" ? "required" : item && item[key] ? "checked" : ""}
+                            ${
+                                value["type"] != "checkbox"
+                                    ? "required"
+                                    : item && item[key]
+                                    ? "checked"
+                                    : ""
+                            }
                         /> 
                         ${
                             value["type"] == "checkbox"
@@ -162,8 +175,8 @@ function confirmDelete() {
     id.name = "id";
     id.value = id_num;
 
-    deleteForm.appendChild(table)
-    deleteForm.appendChild(id)
+    deleteForm.appendChild(table);
+    deleteForm.appendChild(id);
 
     return confirm("Are you sure you want to delete this item?");
 }
