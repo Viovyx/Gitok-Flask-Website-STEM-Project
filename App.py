@@ -233,17 +233,17 @@ def home():
                                 groups=get_api_table("groups"))
     
     fields = request.form
-    with open("./static/js/panel_fields.json") as f:
-        field_args = json.load(f)
-
+    table = fields["table"]
+    id = int(fields["id"])
+    
     if fields["delete_input"] == "true":
         delete_api_data(fields["table"], fields["id"])
         return redirect("/home")
     else:
-        table = fields["table"]
-        id = int(fields["id"])
-        properties = [field_args[arg] for arg in field_args if field_args[arg]["table"] == table][0]
         data = {}
+        with open("./static/js/panel_fields.json") as f:
+            field_args = json.load(f)
+        properties = [field_args[arg] for arg in field_args if field_args[arg]["table"] == table][0]
 
         for field in fields:
             if field not in ("delete_input", "action", "table", "id"):

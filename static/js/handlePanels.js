@@ -1,3 +1,6 @@
+var table_name;
+var id_num;
+
 var panel = document.getElementById("edit-panel");
 var panel_fields = {};
 fetch("/static/js/panel_fields.json")
@@ -13,6 +16,7 @@ function openPanel(name, item = null, select_items = null) {
 
     var title = document.getElementById("title");
     var form = document.getElementById("form");
+    var delete_form = document.getElementById("delete-form");
     form.innerHTML = "";
 
     const action = document.createElement("input");
@@ -21,15 +25,9 @@ function openPanel(name, item = null, select_items = null) {
 
     // id is given => edit item
     if (item) {
+        delete_form.classList.remove("hidden");
         title.textContent = `Edit Item - ${name} (id: ${item["id"]})`;
         action.value = "edit";
-
-        form.innerHTML += `
-            <label for="delete_input">Delete this item?</label>
-            <input type="checkbox" id="delete_input" name="delete_input" class="delete-item" value="true">
-            <input type="hidden" name="delete_input" value="false">
-            <br>
-        `;
 
         const { id, optionsHTML } = generateOptions(fields, select_items, item);
         form.appendChild(id);
@@ -37,24 +35,26 @@ function openPanel(name, item = null, select_items = null) {
     }
     // id is not given => create item
     else {
-        title.textContent = "Create Item - " + name;
+        delete_form.classList.add("hidden");
+        title.textContent = `Create Item - ${name}`;
         action.value = "create";
-
-        const delete_input = document.createElement("input");
-        delete_input.type = "hidden";
-        delete_input.name = "delete_input";
-        delete_input.value = "false";
-        form.appendChild(delete_input);
 
         const { id, optionsHTML } = generateOptions(fields, select_items);
         form.appendChild(id);
         form.innerHTML += optionsHTML;
     }
 
+    const delete_input = document.createElement("input");
+    delete_input.type = "hidden";
+    delete_input.name = "delete_input";
+    delete_input.value = "false";
+    
     const table = document.createElement("input");
     table.type = "hidden";
     table.name = "table";
     table.value = fields["table"];
+
+    form.appendChild(delete_input);
     form.appendChild(table);
     form.appendChild(action);
 
@@ -65,11 +65,10 @@ function openPanel(name, item = null, select_items = null) {
             </button>
         `;
 
+    table_name = fields["table"]
+    id_num = item["id"]
+    
     panel.classList.remove("hidden");
-}
-
-function closePanel() {
-    panel.classList.add("hidden");
 }
 
 function generateOptions(fields, select_items = null, item = null) {
@@ -144,4 +143,27 @@ function generateOptions(fields, select_items = null, item = null) {
     }
 
     return { id, optionsHTML };
+}
+
+function closePanel() {
+    panel.classList.add("hidden");
+}
+
+function confirmDelete() {
+    const deleteForm = document.getElementById("delete-form");
+
+    const table = document.createElement("input");
+    table.type = "hidden";
+    table.name = "table";
+    table.value = table_name;
+
+    const id = document.createElement("input");
+    id.type = "hidden";
+    id.name = "id";
+    id.value = id_num;
+
+    deleteForm.appendChild(table)
+    deleteForm.appendChild(id)
+
+    return confirm("Are you sure you want to delete this item?");
 }
