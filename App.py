@@ -92,22 +92,24 @@ def reset_door_states():
 def create_log_obj(data):
     date = datetime.now(timezone.utc)
     user_id = data["user"]
-    if user_id != 0:
+    if user_id:
         user_info = get_api_data("users", "id", user_id)[0]
     else:
         user_info = {"FirstName":"Unknown", "LastName":"User"}
     
-    action_id = data["action"]
-    action = ["failed", "successful", "checkout"][action_id]
-
-    if data["door_ip"]:
-        door_info = get_api_data("devices", "IP", data["door_ip"])[0]
+    door_info = get_api_data("devices", "IP", data["door_ip"])
+    if len(door_info):
+        door_info = door_info[0]
+        scanner_info = [scanner for scanner in get_api_table("devices") if scanner["Type"] == "scanner" and scanner["Door_Id"] == door_info["id"]][0]
     else:
         door_info = {"Name":"Unknown Door"}
 
+    action_id = data["action"]
+    action = ["failed", "successful", "checkout"][action_id]
+
     log_obj = {
         "Action": action_id,
-        "Description": f"Scan {action} for {user_info['FirstName']} {user_info['LastName']} on '{door_info["Name"]}'",
+        "Description": f"Scan {action} for '{user_info['FirstName']} {user_info['LastName']}' for door '{door_info["Name"]}' with scanner '{scanner_info["Name"]}'",
         "Time": date
     }
 
@@ -377,9 +379,12 @@ def handle_mqtt_message(client, userdata, message):
             user_id = action_data["user"]
             action = action_data["action"]
 
-            user_info = get_api_data("users", "id", user_id)[0]
-            new_door_id = get_api_data("devices", "IP", action_data["door_ip"])[0]["id"]
-            socketio.emit("updateDoorUser", {"user_id":user_id, "first_name":user_info["FirstName"], "last_name":user_info["LastName"], "new_door":new_door_id})
+            if user_id:
+                user_info = get_api_data("users", "id", user_id)[0]
+                new_door_id = get_api_data("devices", "IP", action_data["door_ip"] if action != 2 else 0)[0]["id"]
+
+                socketio.emit("updateDoorUser", {"user_id":user_id, "first_name":user_info["FirstName"], "last_name":user_info["LastName"], "new_door":new_door_id})
+                put_api_data("users", user_info["id"], {"Current_Door":new_door_id})
 
             log_obj = create_log_obj(action_data)
             post_api_data("logs", log_obj)
@@ -392,8 +397,8 @@ def handle_mqtt_message(client, userdata, message):
             socketio.emit("updateSensorGraph", {"value": action, "date": date})
 
         case "Tapgate/feeds/scanner.checkcard":
-            action_feed = "Tapgate/feeds/scanner.action"
             data = json.loads(message.payload.decode())  # {"uid":"[255.255.255.255]", "pass":"DSQDad", "ip":"192.168.0.10"}
+
             card_uid = data["uid"].replace(".", ",")
             card_pass = data["pass"]
             card_info = get_api_data("cards", "CardUID", card_uid)
@@ -404,41 +409,35 @@ def handle_mqtt_message(client, userdata, message):
             if len(scanner) and len(card_info):
                 scanner = scanner[0]
                 card_info = card_info[0]
-
-                door_id = scanner["Door_Id"]
-                door = get_api_data("devices", "id", door_id)
-                door = door[0]
-                
-                user_info = get_api_data("users", "id", card_info["User_id"])[0]
-                group_info = get_api_data("groups", "id", user_info["Group_id"])[0]
                 authenticated = card_pass == card_info["UniquePass"]
+
+            user_info = get_api_data("users", "id", card_info["User_id"])
+            if len(user_info):
+                user_info = user_info[0]
             else:
-                authenticated = False
                 user_info = {"id":0}
-            
+
+            door_info = door_info = get_api_data("devices", "id", scanner["Door_Id"])
+            if len(door_info):
+                door_info = door_info[0]
+            else:
+                door_info = {"IP":0}
+
             action = 0
-            if authenticated:
+            if authenticated and user_info["id"] and door_info["IP"]:
+                group_info = get_api_data("groups", "id", user_info["Group_id"])[0]
+
                 admin = group_info["Admin"]
                 access = group_info["Access"]
 
-                if user_info["Current_Door"] != 1 or door["id"] == 1:  # User is still checked in or choose to checkout => check out
+                if user_info["Current_Door"] != 1 or door_info["id"] == 1:  # User is still checked in or choose to checkout => check out
                     action = 2
                 
-                if user_info["Current_Door"] != door_id and door["id"] != 1:  # Make sure to not checkin to same door again and trying to checkout
-                    if not admin:
-                        if access >= door["Access"]:  # access allowed
-                            action = 1
-                        else:
-                            action = 0
-                    else:  # User is admin = Always allowed
-                        action = 1
+                if user_info["Current_Door"] != scanner["Door_Id"] and door_info["id"] != 1:  # Make sure to not checkin to same door again and trying to checkout
+                    action = 1 if admin or access >= door_info["Access"] else 0
 
-            if action == 1:
-                put_api_data("users", user_info["id"], {"Current_Door":door["id"]})
-            elif user_info["id"]:
-                door = {"IP":0}
-                put_api_data("users", user_info["id"], {"Current_Door":1})
-            mqtt.publish(action_feed, str({"user":user_info["id"],"action":action,"door_ip":str(door["IP"])}).replace("'", '"'))
+            action_feed = "Tapgate/feeds/scanner.action"
+            mqtt.publish(action_feed, str({"user":user_info["id"],"action":action,"door_ip":str(door_info["IP"])}).replace("'", '"'))
 
 
         case "Tapgate/feeds/scanner.setcardpass":
