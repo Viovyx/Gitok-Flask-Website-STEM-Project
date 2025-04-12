@@ -223,7 +223,7 @@ def login():
                 user = User()
                 user.id = email
                 flask_login.login_user(user)
-                post_log(f"Login successfull for '{user_data["FirstName"]} {user_data["LastName"]}'.", email)
+                post_log(f"Login successful for '{user_data["FirstName"]} {user_data["LastName"]}'.", email)
                 return redirect('/home')
             post_log(f"Login failed for '{user_data["FirstName"]} {user_data["LastName"]}'. Incorrect password.", email)
             return redirect('/?error=bad_login')
@@ -375,7 +375,7 @@ def account():
 @app.route('/logout')
 def logout():
     user_data = get_user_data(flask_login.current_user.id)[0]
-    post_log(f"Logout successfull for '{user_data["FirstName"]} {user_data["LastName"]}'.", user_data["Email"])
+    post_log(f"Logout successful for '{user_data["FirstName"]} {user_data["LastName"]}'.", user_data["Email"])
     flask_login.logout_user()
     return redirect('/')
 
