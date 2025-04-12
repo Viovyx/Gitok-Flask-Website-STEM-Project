@@ -257,7 +257,7 @@ def home():
 
     if fields["delete_input"] == "true":
         delete_api_data(fields["table"], id)
-        post_log(f"Deleted item. Table: '{table}' - id: '{id}'", flask_login.current_user.id)
+        post_log(f"Item deleted. Table: '{table}' - id: '{id}'", flask_login.current_user.id)
         return redirect("/home")
     else:
         data = {}
@@ -274,7 +274,7 @@ def home():
                     all_items = get_api_table(table)
                     for item in all_items:
                         if item[field] == value and item["id"] != id:
-                            post_log(f"Error {"editting" if fields["action"] == "edit" else "creating"} item. Duplicate key value. Table: '{table}' {("- id: '" + str(id) + "'") if id else ""}", flask_login.current_user.id)
+                            post_log(f"Item {"edit" if fields["action"] == "edit" else "create"} error. Duplicate key value. Table: '{table}' {("- id: '" + str(id) + "'") if id else ""}", flask_login.current_user.id)
                             return redirect('/home?error=duplicate_key')
 
                 match field_prop["type"]:
@@ -293,7 +293,7 @@ def home():
             post_log(f"Item {"edited" if fields["action"] == "edit" else "created"} successfully. Table: '{table}' {("- id: '" + str(id) + "'") if id else ""}", flask_login.current_user.id)
             return redirect("/home")
         else:
-            post_log(f"Error {"editting" if fields["action"] == "edit" else "creating"} item. Invalid value. Table: '{table}' {("- id: '" + str(id) + "'") if id else ""}", flask_login.current_user.id)
+            post_log(f"Item {"edit" if fields["action"] == "edit" else "create"} error. Invalid value. Table: '{table}' {("- id: '" + str(id) + "'") if id else ""}", flask_login.current_user.id)
             return redirect("/home?error=invalid_field")
 
 @app.route('/live-data')
