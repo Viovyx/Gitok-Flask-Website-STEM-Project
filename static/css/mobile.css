@@ -104,9 +104,11 @@
   border: none;
   box-shadow: none;
   z-index: 200;
+  overflow-y: scroll;
 }
 
 .edit-panel {
+  overflow-y: scroll;
   background-color: transparent;
 }
 

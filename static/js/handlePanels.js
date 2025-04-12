@@ -69,6 +69,7 @@ function openPanel(name, item = null, select_items = null) {
         `;
 
     panel.classList.remove("hidden");
+    document.querySelector(".edit-panel .panel-wrapper").scrollTop = 0;
 }
 
 function generateOptions(fields, select_items = null, item = null) {
