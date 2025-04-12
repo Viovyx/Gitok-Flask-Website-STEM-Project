@@ -413,8 +413,9 @@ def handle_mqtt_message(client, userdata, message):
                 put_api_data("users", user_info["id"], {"Current_Door":new_door_id})
 
                 # Open door
-                open_feed = "Tapgate/feeds/lock.open"
-                mqtt.publish(open_feed, str({"action":action,"door_ip":door_ip}).replace("'", '"'))
+                if action == 1:
+                    open_feed = "Tapgate/feeds/lock.open"
+                    mqtt.publish(open_feed, door_ip)
 
             log_description = create_log_description(action_data)
             post_log(log_description, email)
