@@ -89,6 +89,10 @@
   max-width: 100%;
 }
 
+.no-scroll {
+  overflow:hidden;
+}
+
 .panel-wrapper {
   position: absolute;
   top: 0;
