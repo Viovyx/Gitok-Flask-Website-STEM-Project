@@ -401,15 +401,20 @@ def handle_mqtt_message(client, userdata, message):
             action_data = json.loads(message.payload.decode())  # {"user":1, "action":1, "door_ip":"192.168.0.11"}
             user_id = action_data["user"]
             action = action_data["action"]
+            door_ip = action_data["door_ip"]
 
             email = "Unknown User"
             if user_id:
                 user_info = get_api_data("users", "id", user_id)[0]
                 email = user_info["Email"]
-                new_door_id = get_api_data("devices", "IP", action_data["door_ip"] if action != 2 else 0)[0]["id"]
+                new_door_id = get_api_data("devices", "IP", door_ip if action != 2 else 0)[0]["id"]
 
                 socketio.emit("updateDoorUser", {"user_id":user_id, "first_name":user_info["FirstName"], "last_name":user_info["LastName"], "new_door":new_door_id})
                 put_api_data("users", user_info["id"], {"Current_Door":new_door_id})
+
+                # Open door
+                open_feed = "Tapgate/feeds/lock.open"
+                mqtt.publish(open_feed, str({"action":action,"door_ip":door_ip}).replace("'", '"'))
 
             log_description = create_log_description(action_data)
             post_log(log_description, email)
