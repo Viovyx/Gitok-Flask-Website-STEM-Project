@@ -355,10 +355,10 @@ def account():
                 lastname = request.form["last-name"] if request.form["last-name"] else user_data["LastName"]
 
                 put_api_data("users", user_data["id"], {"Email":email, "FirstName":firstname, "LastName":lastname})
-                post_log(f"Profile updated successfully for '{user_data["FirstName"]} {user_data["LastName"]}'.", email)
+                post_log(f"Profile info updated successfully for '{user_data["FirstName"]} {user_data["LastName"]}'.", email)
                 return redirect("/account")
             else:
-                post_log(f"Profile update failed for '{user_data["FirstName"]} {user_data["LastName"]}'.", email)
+                post_log(f"Profile info update failed for '{user_data["FirstName"]} {user_data["LastName"]}'.", email)
                 return redirect("/account?error=bad_pass")
         
         case "pass":
@@ -368,10 +368,10 @@ def account():
                 flask_login.logout_user()
                 pass_hash = bcrypt.generate_password_hash(request.form["new-password"])
                 put_api_data("users", user_data["id"], {"Password":pass_hash})
-                post_log(f"Password updated successfully for '{user_data["FirstName"]} {user_data["LastName"]}'.", user_data["Email"])
+                post_log(f"Profile password updated successfully for '{user_data["FirstName"]} {user_data["LastName"]}'.", user_data["Email"])
                 return redirect("/")
             else:
-                post_log(f"Password update failed for '{user_data["FirstName"]} {user_data["LastName"]}'.", user_data["Email"])
+                post_log(f"Profile password update failed for '{user_data["FirstName"]} {user_data["LastName"]}'.", user_data["Email"])
                 return redirect("/account?error=bad_pass")
 
 
