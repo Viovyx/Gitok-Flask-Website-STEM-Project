@@ -89,7 +89,14 @@ def reset_door_states():
     for door in doors:
         put_api_data("devices", door["id"], {"Status":0})
 
-def create_log_obj(data):
+def post_log(description):
+    log_obj = {
+        "Description": description,
+        "Time": datetime.now(timezone.utc)
+    }
+    post_api_data("logs", log_obj)
+
+def create_log_description(data):
     date = datetime.now(timezone.utc)
     user_id = data["user"]
     if user_id:
@@ -118,19 +125,12 @@ def create_log_obj(data):
     else:
         description = f"Scan {action}. Unknown Keycard or Scanner used."
 
-    log_obj = {
-        "Action": action_id,
-        "Description": description,
-        "Time": date
-    }
+    return description
 
-    return log_obj
-
-def update_data(data, log_obj):
+def update_data(data, action):
     last_data = data[-1] if len(data) else {"id":-1,"Date":-1}
     id = last_data["id"]
-    date = log_obj["Time"].strftime("%Y-%m-%d")
-    action = log_obj["Action"]
+    date = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     if last_data["Date"] == date:
         data_obj = {
             "Successful":last_data["Successful"]+1 if action else last_data["Successful"],
@@ -211,17 +211,22 @@ def login():
     email = request.form['email']
     user_data = get_user_data(email)
     if not user_data:
+        post_log(f"Login failed for '{email}'. No user found.")
         return redirect('/?error=bad_login')
 
     if len(user_data) != 0:
-        group_info = get_api_data("groups", "id", user_data[0]["Group_id"])
+        user_data = user_data[0]
+        group_info = get_api_data("groups", "id", user_data["Group_id"])
         if group_info[0]["Admin"] == 1:
-            if bcrypt.check_password_hash(user_data[0]['Password'], request.form['password']):
+            if bcrypt.check_password_hash(user_data['Password'], request.form['password']):
                 user = User()
                 user.id = email
                 flask_login.login_user(user)
+                post_log(f"Login successfull for '{user_data["FirstName"]} {user_data["LastName"]}' - '{email}'.")
                 return redirect('/home')
+            post_log(f"Login failed for '{user_data["FirstName"]} {user_data["LastName"]}' - '{email}'. Incorrect password.")
             return redirect('/?error=bad_login')
+        post_log(f"Login failed for '{user_data["FirstName"]} {user_data["LastName"]}' - '{email}'. Not an admin.")
         return redirect('/?error=no_admin')
 
 
@@ -282,8 +287,8 @@ def home():
                         data[field] = fields[field]
         
         if (put_api_data(table, id, data) if fields["action"] == "edit" else post_api_data(table, data)):
+            post_log(f"Item {"edited" if fields["action"] == "edit" else "created"} successfully. Table '{table}' - id '{id}'")
             return redirect("/home")
-
         else:
             return redirect("/home?error=invalid_field")
 
@@ -346,8 +351,10 @@ def account():
                 lastname = request.form["last-name"] if request.form["last-name"] else user_data["LastName"]
 
                 put_api_data("users", user_data["id"], {"Email":email, "FirstName":firstname, "LastName":lastname})
+                post_log(f"Profile updated successfully for '{user_data["FirstName"]} {user_data["LastName"]}' - '{email}'.")
                 return redirect("/account")
             else:
+                post_log(f"Profile update failed for '{user_data["FirstName"]} {user_data["LastName"]}' - '{email}'.")
                 return redirect("/account?error=bad_pass")
         
         case "pass":
@@ -357,13 +364,17 @@ def account():
                 flask_login.logout_user()
                 pass_hash = bcrypt.generate_password_hash(request.form["new-password"])
                 put_api_data("users", user_data["id"], {"Password":pass_hash})
+                post_log(f"Password updated successfully for '{user_data["FirstName"]} {user_data["LastName"]}' - '{user_data["Email"]}'.")
                 return redirect("/")
             else:
+                post_log(f"Password update failed for '{user_data["FirstName"]} {user_data["LastName"]}' - '{email}'.")
                 return redirect("/account?error=bad_pass")
 
 
 @app.route('/logout')
 def logout():
+    user_data = get_user_data(flask_login.current_user.id)[0]
+    post_log(f"Logout successfull for '{user_data["FirstName"]} {user_data["LastName"]}' - '{user_data["Email"]}'.")
     flask_login.logout_user()
     return redirect('/')
 
@@ -397,15 +408,13 @@ def handle_mqtt_message(client, userdata, message):
                 socketio.emit("updateDoorUser", {"user_id":user_id, "first_name":user_info["FirstName"], "last_name":user_info["LastName"], "new_door":new_door_id})
                 put_api_data("users", user_info["id"], {"Current_Door":new_door_id})
 
-            log_obj = create_log_obj(action_data)
-            post_api_data("logs", log_obj)
+            log_description = create_log_description(action_data)
+            post_log(log_description)
 
             data = get_api_table("data")
-            update_data(data, log_obj)
+            update_data(data, action)
 
-            action = log_obj["Action"]
-            date = log_obj["Time"].strftime("%Y-%m-%d")
-            socketio.emit("updateSensorGraph", {"value": action, "date": date})
+            socketio.emit("updateSensorGraph", {"value": action, "date": datetime.now(timezone.utc).strftime("%Y-%m-%d")})
 
         case "Tapgate/feeds/scanner.checkcard":
             data = json.loads(message.payload.decode())  # {"uid":"[255.255.255.255]", "pass":"DSQDad", "ip":"192.168.0.10"}

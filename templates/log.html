@@ -35,15 +35,13 @@
                 </div>
                 <table class="log-table" id="log-table">
                     <tr>
-                        <th>Action</th>
-                        <th>Details</th>
                         <th>Time (UTC)</th>
+                        <th>Details</th>
                     </tr>
                     {% for log in logs %}
                         <tr>
-                            <td>{{ log.Action }}</td>
-                            <td>{{ log.Description }}</td>
                             <td>{{ log.Time }}</td>
+                            <td>{{ log.Description }}</td>
                         </tr>
                     {% endfor %}
                 </table>
