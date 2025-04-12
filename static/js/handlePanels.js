@@ -112,16 +112,16 @@ function generateOptions(fields, select_items = null, item = null) {
                             type=${value["type"]}
                             id=${key}
                             name=${key}
-                            placeholder=${
+                            placeholder="${
                                 item
                                     ? item[key]
                                     : value["default"]
                                     ? value["default"]
                                     : key
-                            }
+                            }"
                             ${
                                 item && value["type"] != "password"
-                                    ? "value=" + item[key]
+                                    ? `value="${item[key]}"`
                                     : ""
                             }
                             ${
