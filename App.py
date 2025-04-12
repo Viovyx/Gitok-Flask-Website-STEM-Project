@@ -89,9 +89,10 @@ def reset_door_states():
     for door in doors:
         put_api_data("devices", door["id"], {"Status":0})
 
-def post_log(description):
+def post_log(description, user):
     log_obj = {
         "Description": description,
+        "User": user,
         "Time": datetime.now(timezone.utc)
     }
     post_api_data("logs", log_obj)
@@ -211,7 +212,7 @@ def login():
     email = request.form['email']
     user_data = get_user_data(email)
     if not user_data:
-        post_log(f"Login failed for '{email}'. No user found.")
+        post_log(f"Login failed for '{email}'. No user found.", email)
         return redirect('/?error=bad_login')
 
     if len(user_data) != 0:
@@ -222,11 +223,11 @@ def login():
                 user = User()
                 user.id = email
                 flask_login.login_user(user)
-                post_log(f"Login successfull for '{user_data["FirstName"]} {user_data["LastName"]}' - '{email}'.")
+                post_log(f"Login successfull for '{user_data["FirstName"]} {user_data["LastName"]}'.", email)
                 return redirect('/home')
-            post_log(f"Login failed for '{user_data["FirstName"]} {user_data["LastName"]}' - '{email}'. Incorrect password.")
+            post_log(f"Login failed for '{user_data["FirstName"]} {user_data["LastName"]}'. Incorrect password.", email)
             return redirect('/?error=bad_login')
-        post_log(f"Login failed for '{user_data["FirstName"]} {user_data["LastName"]}' - '{email}'. Not an admin.")
+        post_log(f"Login failed for '{user_data["FirstName"]} {user_data["LastName"]}'. Not an admin.", email)
         return redirect('/?error=no_admin')
 
 
@@ -287,7 +288,7 @@ def home():
                         data[field] = fields[field]
         
         if (put_api_data(table, id, data) if fields["action"] == "edit" else post_api_data(table, data)):
-            post_log(f"Item {"edited" if fields["action"] == "edit" else "created"} successfully. Table '{table}' - id '{id}'")
+            post_log(f"Item {"edited" if fields["action"] == "edit" else "created"} successfully. Table '{table}' - id '{id}'", flask_login.current_user.id)
             return redirect("/home")
         else:
             return redirect("/home?error=invalid_field")
@@ -351,10 +352,10 @@ def account():
                 lastname = request.form["last-name"] if request.form["last-name"] else user_data["LastName"]
 
                 put_api_data("users", user_data["id"], {"Email":email, "FirstName":firstname, "LastName":lastname})
-                post_log(f"Profile updated successfully for '{user_data["FirstName"]} {user_data["LastName"]}' - '{email}'.")
+                post_log(f"Profile updated successfully for '{user_data["FirstName"]} {user_data["LastName"]}'.", email)
                 return redirect("/account")
             else:
-                post_log(f"Profile update failed for '{user_data["FirstName"]} {user_data["LastName"]}' - '{email}'.")
+                post_log(f"Profile update failed for '{user_data["FirstName"]} {user_data["LastName"]}'.", email)
                 return redirect("/account?error=bad_pass")
         
         case "pass":
@@ -364,17 +365,17 @@ def account():
                 flask_login.logout_user()
                 pass_hash = bcrypt.generate_password_hash(request.form["new-password"])
                 put_api_data("users", user_data["id"], {"Password":pass_hash})
-                post_log(f"Password updated successfully for '{user_data["FirstName"]} {user_data["LastName"]}' - '{user_data["Email"]}'.")
+                post_log(f"Password updated successfully for '{user_data["FirstName"]} {user_data["LastName"]}'.", user_data["Email"])
                 return redirect("/")
             else:
-                post_log(f"Password update failed for '{user_data["FirstName"]} {user_data["LastName"]}' - '{email}'.")
+                post_log(f"Password update failed for '{user_data["FirstName"]} {user_data["LastName"]}'.", user_data["Email"])
                 return redirect("/account?error=bad_pass")
 
 
 @app.route('/logout')
 def logout():
     user_data = get_user_data(flask_login.current_user.id)[0]
-    post_log(f"Logout successfull for '{user_data["FirstName"]} {user_data["LastName"]}' - '{user_data["Email"]}'.")
+    post_log(f"Logout successfull for '{user_data["FirstName"]} {user_data["LastName"]}'.", user_data["Email"])
     flask_login.logout_user()
     return redirect('/')
 
@@ -401,15 +402,17 @@ def handle_mqtt_message(client, userdata, message):
             user_id = action_data["user"]
             action = action_data["action"]
 
+            email = "Unknown User"
             if user_id:
                 user_info = get_api_data("users", "id", user_id)[0]
+                email = user_info["Email"]
                 new_door_id = get_api_data("devices", "IP", action_data["door_ip"] if action != 2 else 0)[0]["id"]
 
                 socketio.emit("updateDoorUser", {"user_id":user_id, "first_name":user_info["FirstName"], "last_name":user_info["LastName"], "new_door":new_door_id})
                 put_api_data("users", user_info["id"], {"Current_Door":new_door_id})
 
             log_description = create_log_description(action_data)
-            post_log(log_description)
+            post_log(log_description, email)
 
             data = get_api_table("data")
             update_data(data, action)

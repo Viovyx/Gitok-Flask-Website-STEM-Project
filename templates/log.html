@@ -37,11 +37,13 @@
                     <tr>
                         <th>Time (UTC)</th>
                         <th>Details</th>
+                        <th>User</th>
                     </tr>
                     {% for log in logs %}
                         <tr>
                             <td>{{ log.Time }}</td>
                             <td>{{ log.Description }}</td>
+                            <td>{{ log.User }}</td>
                         </tr>
                     {% endfor %}
                 </table>
