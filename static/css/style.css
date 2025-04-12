@@ -374,6 +374,8 @@ form button:active {
     position: fixed;
     bottom: 0.5em;
     right: 1em;
+    z-index: 1000;
+    touch-action: manipulation;
 }
 
 .theme-svg:hover {
