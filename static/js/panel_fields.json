@@ -9,18 +9,21 @@
         "CardUID": {
             "type": "text",
             "index": 0,
-            "default": "[255,255,255,255]"
+            "default": "[255,255,255,255]",
+            "description": "Use the scanner to find the UID. Must be formatted as shown."
         },
         "UniquePass": {
             "type": "text",
             "index": "unique",
-            "default": 0
+            "default": 0,
+            "description": "Use the scanner to create or find the pass."
         },
         "User_id": {
             "type": "select",
             "index": "User_id",
             "index_name": "Email",
-            "default": 0
+            "default": 0,
+            "description": "Select the user of the keycard."
         }
     },
     "doors": {
@@ -38,17 +41,20 @@
         "Name": {
             "type": "text",
             "index": "unique",
-            "default": 0
+            "default": 0,
+            "description": "The name must be unique accross all doors."
         },
         "Access": {
             "type": "number",
             "index": 0,
-            "default": "0"
+            "default": "0",
+            "description": "Use the access levels to block certain groups from access."
         },
         "IP": {
             "type": "text",
             "index": 0,
-            "default": "192.168.0.1"
+            "default": "192.168.0.1",
+            "description": "Make sure to give the door a static or reserved IP address."
         },
         "Door_Id": {
             "type": "number",
@@ -76,7 +82,8 @@
         "Name": {
             "type": "text",
             "index": "unique",
-            "default": 0
+            "default": 0,
+            "description": "The name must be unique accross all doors."
         },
         "Access": {
             "type": "number",
@@ -86,13 +93,15 @@
         "IP": {
             "type": "text",
             "index": 0,
-            "default": "192.168.0.1"
+            "default": "192.168.0.1",
+            "description": "Make sure to give the scanner a static or reserved IP address."
         },
         "Door_Id": {
             "type": "select",
             "index": "Door_Id",
             "index_name": "Name",
-            "default": 0
+            "default": 0,
+            "description": "Choose for which door this scanner will be used."
         },
         "Status": {
             "type": "number",
@@ -110,28 +119,33 @@
         "Email": {
             "type": "email",
             "index": "unique",
-            "default": 0
+            "default": 0,
+            "description": "Only one account can be made per email."
         },
         "Password": {
             "type": "password",
             "index": 0,
-            "default": 0
+            "default": 0,
+            "description": "Set a default password for the account. Changes can only be made by the account itself."
         },
         "FirstName": {
             "type": "text",
             "index": 0,
-            "default": 0
+            "default": 0,
+            "description": "Enter the first name of the user."
         },
         "LastName": {
             "type": "text",
             "index": 0,
-            "default": 0
+            "default": 0,
+            "description": "Enter the last name of the user."
         },
         "Group_id": {
             "type": "select",
             "index": "Group_id",
             "index_name": "Groupname",
-            "default": 0
+            "default": 0,
+            "description": "Select a group for this user. This determines their access to doors and webpanel (admin)."
         },
         "Current_Door": {
             "type": "number",
@@ -149,17 +163,20 @@
         "Groupname": {
             "type": "text",
             "index": "unique",
-            "default": 0
+            "default": 0,
+            "description": "The name must be unique accross all groups."
         },
         "Admin": {
             "type": "checkbox",
             "index": 0,
-            "default": false
+            "default": false,
+            "description": "Admin will ignore access level and have access to the web panel login."
         },
         "Access": {
             "type": "number",
             "index": 0,
-            "default": "0"
+            "default": "0",
+            "description": "The higher access level will allow the group to access higher access doors."
         }
     }
 }

@@ -87,12 +87,8 @@ function generateOptions(fields, select_items = null, item = null) {
             ) {
                 optionsHTML += `<label for=${key}>${key}: <b>*</b></label>`;
 
-                if (value["type"] == "password") {
-                    optionsHTML += '<p class="subscript">This can only be set once! Changes have to be made by owner account.</p>'
-                }
-
-                if (value["index"] == "unique") {
-                    optionsHTML += `<p class="subscript">Must be unique accross all ${fields["table"]}!</p>`;
+                if (value["type"] != "checkbox") {
+                    optionsHTML += `<p class="subscript">${value["description"]}</p>`
                 }
 
                 if (value["type"] == "select") {
@@ -151,6 +147,10 @@ function generateOptions(fields, select_items = null, item = null) {
                             value=${value["default"]}
                         />
                     `;
+            }
+
+            if (value["type"] == "checkbox") {
+                optionsHTML += `<p class="subscript">${value["description"]}</p>`
             }
         }
     }
