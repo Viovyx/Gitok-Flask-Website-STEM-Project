@@ -100,16 +100,27 @@ def create_log_obj(data):
     door_info = get_api_data("devices", "IP", data["door_ip"])
     if len(door_info):
         door_info = door_info[0]
-        scanner_info = [scanner for scanner in get_api_table("devices") if scanner["Type"] == "scanner" and scanner["Door_Id"] == door_info["id"]][0]
+        scanner_info = [scanner for scanner in get_api_table("devices") if scanner["Type"] == "scanner" and scanner["Door_Id"] == door_info["id"]]
+        if len(scanner_info):
+            scanner_info = scanner_info[0]
+        else:
+            door_info = False
+            scanner_info = False
+
     else:
         door_info = {"Name":"Unknown Door"}
 
     action_id = data["action"]
     action = ["failed", "successful", "checkout"][action_id]
 
+    if door_info and scanner_info:
+        description = f"Scan {action} for '{user_info['FirstName']} {user_info['LastName']}' for door '{door_info["Name"]}' with scanner '{scanner_info["Name"]}'."
+    else:
+        description = f"Scan {action}. Unknown Keycard or Scanner used."
+
     log_obj = {
         "Action": action_id,
-        "Description": f"Scan {action} for '{user_info['FirstName']} {user_info['LastName']}' for door '{door_info["Name"]}' with scanner '{scanner_info["Name"]}'",
+        "Description": description,
         "Time": date
     }
 
@@ -411,16 +422,17 @@ def handle_mqtt_message(client, userdata, message):
                 card_info = card_info[0]
                 authenticated = card_pass == card_info["UniquePass"]
 
-            user_info = get_api_data("users", "id", card_info["User_id"])
-            if len(user_info):
-                user_info = user_info[0]
-            else:
-                user_info = {"id":0}
+                user_info = get_api_data("users", "id", card_info["User_id"])
+                if len(user_info):
+                    user_info = user_info[0]
 
-            door_info = door_info = get_api_data("devices", "id", scanner["Door_Id"])
-            if len(door_info):
-                door_info = door_info[0]
+                door_info = door_info = get_api_data("devices", "id", scanner["Door_Id"])
+                if len(door_info):
+                    door_info = door_info[0]
+            
             else:
+                authenticated = False
+                user_info = {"id":0}
                 door_info = {"IP":0}
 
             action = 0
