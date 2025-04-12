@@ -126,3 +126,12 @@
 .data-grid > .item#create {
   width: 100%;
 }
+
+.row:has(.button-delete) {
+  justify-content: space-around;
+}
+
+.button-delete {
+  width: 20vw;
+  border-radius: 5px  ;
+}
