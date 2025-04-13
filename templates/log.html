@@ -29,11 +29,11 @@
                         <input type="number" value="{{ info.page }}" id="page-selector">
                     </div>
                     <div>
-                        <label for="shown-selector">Items/Page:</label>
+                        <label for="shown-selector">Max shown Items:</label>
                         <input type="number" value="{{ info.shown }}" id="shown-selector">
                     </div>
                     <div>
-                        <label for="type-selector">Filter by type:</label>
+                        <label for="type-selector">Filter by Type:</label>
                         <select name="type-selector" id="type-selector">
                             <option value="All" {% if info.type == 'All'  %}selected{% endif %} >All</option>
                             {% for type in info.types %}
@@ -42,7 +42,7 @@
                         </select>
                     </div>
                     <div>
-                        <label for="user-selector">Filter by user:</label>
+                        <label for="user-selector">Filter by User:</label>
                         <select name="user-selector" id="user-selector">
                             <option value="All" {% if info.user == 'All' %}selected{% endif %}>All</option>
                             {% for user in info.users %}
