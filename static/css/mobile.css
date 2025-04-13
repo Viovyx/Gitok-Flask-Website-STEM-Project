@@ -147,7 +147,7 @@
   width: 100%;
 }
 
-.row:has(.button-delete) {
+.row:has(.button-delete), .row.legend {
   justify-content: space-around;
 }
 
