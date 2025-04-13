@@ -113,7 +113,18 @@
 }
 
 .log-selector {
-  justify-content: space-evenly;
+  flex-wrap: wrap;
+  gap: 0;
+  justify-content: space-between;
+}
+
+.log-selector > div {
+  width: 40vw;
+}
+
+.log-selector > div > * {
+  display: inline-block;
+  width: 100% !important;
 }
 
 .log-table {

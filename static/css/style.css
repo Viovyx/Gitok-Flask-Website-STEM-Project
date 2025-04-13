@@ -606,7 +606,11 @@ form button:active {
     gap: 3em;
 }
 
-.log-selector > div > input {
+.log-selector > div {
+    width: 15em;
+}
+
+.log-selector > div > *:not(label) {
     width: 100%;
 }
 

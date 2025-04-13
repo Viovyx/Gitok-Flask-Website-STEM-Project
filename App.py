@@ -315,23 +315,38 @@ def live_data():
 @flask_login.login_required
 def log():
     logs = get_api_table("logs")[::-1]
+    type_logs = logs
+    user_logs = logs
+
     page = int(request.args.get("page", 1))
     shown = int(request.args.get("shown", 20))
+    type = request.args.get("type", "All")
+    user = request.args.get("user", "All").strip('"')
 
     start = shown * (page-1)
     end = start + shown
-    logs = logs[start:end]
 
+    if type != "All":
+        type_logs = [log for log in logs if log["Description"].split(" ")[0].lower() == type.lower()]
+    if user != "All":
+        user_logs = [log for log in logs if log["User"].lower() == user.lower()]
+
+    users = list(set(log["User"] for log in type_logs))
+    users.sort()
+    types = list(set(log["Description"].split(" ")[0] for log in user_logs))
+    types.sort()
+
+    logs = [log for log in type_logs if log in user_logs][start:end]
     if not len(logs):
         return redirect("/log")
-
+    
     return render_template('log.html',
                             header=get_element("header"),
                             footer=get_element("footer"),
                             moon_toggle=get_element("moon-toggle"),
                             sun_toggle=get_element("sun-toggle"),
                             logs=logs,
-                            info={"page":page, "shown":shown})
+                            info={"page":page, "shown":shown, "type":type, "user":user, "users":users, "types":types})
 
 @app.route('/account', methods=['GET', 'POST'])
 @flask_login.login_required

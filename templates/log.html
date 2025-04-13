@@ -32,6 +32,24 @@
                         <label for="shown-selector">Items/Page:</label>
                         <input type="number" value="{{ info.shown }}" id="shown-selector">
                     </div>
+                    <div>
+                        <label for="type-selector">Filter by type:</label>
+                        <select name="type-selector" id="type-selector">
+                            <option value="All" {% if info.type == 'All'  %}selected{% endif %} >All</option>
+                            {% for type in info.types %}
+                                <option value="{{ type }}" {% if info.type == type %}selected{% endif %}>{{ type }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div>
+                        <label for="user-selector">Filter by user:</label>
+                        <select name="user-selector" id="user-selector">
+                            <option value="All" {% if info.user == 'All' %}selected{% endif %}>All</option>
+                            {% for user in info.users %}
+                                <option value="{{ user }}" {% if info.user == user %}selected{% endif %}>{{ user }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
                 </div>
                 <table class="log-table" id="log-table">
                     <tr>
