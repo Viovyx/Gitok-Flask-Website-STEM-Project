@@ -279,7 +279,8 @@ def home():
 
                 match field_prop["type"]:
                     case "checkbox":
-                        data[field] = 1 if value == "true" else 0
+                        print(value, type(value))
+                        data[field] = 1 if fields.get(field) == "true" else 0
                     case "number":
                         data[field] = int(value)
                     case "select":
@@ -290,6 +291,7 @@ def home():
                         data[field] = fields[field]
         
         if (put_api_data(table, id, data) if fields["action"] == "edit" else post_api_data(table, data)):
+            print(data)
             post_log(f"Item {"edited" if fields["action"] == "edit" else "created"} successfully. Table: '{table}' {("- id: '" + str(id) + "'") if id else ""}", flask_login.current_user.id)
             return redirect("/home")
         else:

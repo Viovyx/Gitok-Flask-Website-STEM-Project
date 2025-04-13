@@ -89,7 +89,7 @@ function generateOptions(fields, select_items = null, item = null) {
                 optionsHTML += `<label for=${key}>${key}: <b>*</b></label>`;
 
                 if (value["type"] != "checkbox") {
-                    optionsHTML += `<p class="subscript">${value["description"]}</p>`
+                    optionsHTML += `<p class="subscript">${value["description"]}</p>`;
                 }
 
                 if (value["type"] == "select") {
@@ -107,37 +107,40 @@ function generateOptions(fields, select_items = null, item = null) {
                     }
                     optionsHTML += `</select>`;
                 } else {
-                    optionsHTML += `
-                        <input
-                            type=${value["type"]}
-                            id=${key}
-                            name=${key}
-                            placeholder="${
-                                item
-                                    ? item[key]
-                                    : value["default"]
-                                    ? value["default"]
-                                    : key
-                            }"
-                            ${
-                                item && value["type"] != "password"
-                                    ? `value="${item[key]}"`
-                                    : ""
-                            }
-                            ${
-                                value["type"] != "checkbox"
-                                    ? "required"
-                                    : item && item[key]
-                                    ? "checked"
-                                    : ""
-                            }
-                        /> 
-                        ${
-                            value["type"] == "checkbox"
-                                ? `<input type="hidden" name=${key} id=${key} value=${value["default"]}><br>`
-                                : ""
-                        }
-                    `;
+                    if (value["type"] == "checkbox") {
+                        optionsHTML += `
+                            <input
+                                type="checkbox"
+                                id=${key}
+                                name=${key}
+                                value="true"
+                                ${item && item[key] ? "checked" : ""}
+                            />
+                            <input type="hidden" name=${key} id=${key} value="false">
+                            <br>
+                        `;
+                    } else {
+                        optionsHTML += `
+                            <input
+                                required
+                                type=${value["type"]}
+                                id=${key}
+                                name=${key}
+                                placeholder="${
+                                    item
+                                        ? item[key]
+                                        : value["default"]
+                                        ? value["default"]
+                                        : key
+                                }"
+                                ${
+                                    item && value["type"] != "password"
+                                        ? `value="${item[key]}"`
+                                        : ""
+                                }
+                            />
+                        `;
+                    }
                 }
             } else if (!item) {
                 optionsHTML += `
@@ -151,7 +154,7 @@ function generateOptions(fields, select_items = null, item = null) {
             }
 
             if (value["type"] == "checkbox") {
-                optionsHTML += `<p class="subscript">${value["description"]}</p>`
+                optionsHTML += `<p class="subscript">${value["description"]}</p>`;
             }
         }
     }
