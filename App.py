@@ -320,7 +320,7 @@ def log():
 
     page = int(request.args.get("page", 1))
     shown = int(request.args.get("shown", 20))
-    type = request.args.get("type", "All")
+    type = request.args.get("type", "All").strip('"')
     user = request.args.get("user", "All").strip('"')
 
     start = shown * (page-1)

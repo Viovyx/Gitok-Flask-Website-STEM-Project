@@ -19,5 +19,5 @@ function update() {
     typeSelection = typeSelector.selectedOptions[0].value;
     userSelection = userSelector.selectedOptions[0].value;
 
-    window.location.replace(`/log?page=${page}&shown=${shown}&type=${typeSelection}&user="${userSelection}"`);
+    window.location.replace(`/log?page=${page}&shown=${shown}&type="${typeSelection}"&user="${userSelection}"`);
 }
