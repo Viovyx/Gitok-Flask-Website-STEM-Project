@@ -212,7 +212,7 @@ def login():
     email = request.form['email']
     user_data = get_user_data(email)
     if not user_data:
-        post_log(f"Login failed for '{email}'. No user found.", email)
+        post_log(f"Login failed for '{email}'. No user found.", "Unknown User")
         return redirect('/?error=bad_login')
 
     if len(user_data) != 0:
