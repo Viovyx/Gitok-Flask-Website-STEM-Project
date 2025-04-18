@@ -7,16 +7,23 @@ fetch("/static/js/panel_fields.json")
     .then((response) => response.json())
     .then((json) => (panel_fields = json));
 
-function openPanel(name, item = null, select_items = null) {
+// Connect to socketio
+var socket = io.connect();
+
+async function openPanel(name, item = null) {
     const fields = panel_fields[name];
     if (!fields) {
         console.log(`[ERROR] Found format for '${name} (id: ${item["id"]})'`);
         return;
     }
 
+    if (fields["select_table"]) {
+        var select_items = await getSelectItems(fields["select_table"]);
+    }
+
     var title = document.getElementById("title");
-    var form = document.getElementById("form");
     var delete_form = document.getElementById("delete-form");
+    var form = document.getElementById("form");
     form.innerHTML = "";
 
     const action = document.createElement("input");
@@ -72,6 +79,20 @@ function openPanel(name, item = null, select_items = null) {
     document.querySelector(".edit-panel .panel-wrapper").scrollTop = 0;
 }
 
+async function getSelectItems(select_table) {
+    return new Promise((resolve, reject) => {
+        socket.emit("getSelectItems", { "table":select_table["name"], "index":select_table["index"] });
+
+        socket.on("selectItemsResponse", (data) => {
+            if (data.error) {
+                reject(data.error);
+            } else {
+                resolve(data.items);
+            }
+        });
+    });
+}
+
 function generateOptions(fields, select_items = null, item = null) {
     const id = document.createElement("input");
     id.type = "hidden";
@@ -79,7 +100,7 @@ function generateOptions(fields, select_items = null, item = null) {
     optionsHTML = "";
 
     for (const [key, value] of Object.entries(fields)) {
-        if (key != "table") {
+        if (key != "table" && key != "select_table") {
             if (key == "id") {
                 id.value = item ? item["id"] : value["default"];
             } else if (
@@ -102,7 +123,7 @@ function generateOptions(fields, select_items = null, item = null) {
                                     : ""
                                 : ""
                         }>${option["id"]} - ${
-                            option[value["index_name"]]
+                            option["value"]
                         }</option>`;
                     }
                     optionsHTML += `</select>`;

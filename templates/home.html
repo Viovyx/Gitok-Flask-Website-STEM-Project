@@ -9,6 +9,8 @@
         <!-- Load Favicon -->
         <link type="image/x-icon" href="/static/img/favicon.ico" rel="icon" />
         <link type="image/x-icon" href="/static/img/favicon.ico" rel="shortcut icon" />
+        <!-- SocketIO CDN -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.6.0/socket.io.min.js"></script>
         <!-- Set Page Title -->
         <title>TapGate | Home</title>
     </head>
@@ -52,7 +54,7 @@
                     <div
                         class="item"
                         id="keycard-{{ keycard.id }}"
-                        onclick='openPanel("keycards", {{ keycard|tojson }}, {{ users|tojson }})'
+                        onclick='openPanel("keycards", {{ keycard|tojson }})'
                     >
                         <h3 id="name">UID: {{ keycard.CardUID }}</h3>
                         <ul>
@@ -64,7 +66,7 @@
                     </div>
                     {% endfor %}
 
-                    <div class="item" id="create" onclick='openPanel("keycards", null, {{ users|tojson }})'>
+                    <div class="item" id="create" onclick='openPanel("keycards")'>
                         <svg
                             class="add-icon"
                             viewBox="0 0 24 24"
@@ -143,7 +145,7 @@
                         <div
                             class="item"
                             id="scanner-{{ scanner.id }}"
-                            onclick='openPanel("scanners", {{ scanner|tojson }}, {{ doors|tojson }})'
+                            onclick='openPanel("scanners", {{ scanner|tojson }})'
                         >
                             <h3 id="name">Name: {{ scanner.Name }}</h3>
                             <ul>
@@ -155,7 +157,7 @@
                         </div>
                     {% endfor %}
 
-                    <div class="item" id="create" onclick='openPanel("scanners", null, {{ doors|tojson }})'>
+                    <div class="item" id="create" onclick='openPanel("scanners")'>
                         <svg
                             class="add-icon"
                             viewBox="0 0 24 24"
@@ -188,7 +190,7 @@
                         class="item {% if user.id == 1 %}hidden{% endif %}"
                         id="user-{{ user.id }}"
                         {% if user.id != 1 %}
-                            onclick='openPanel("users", {{ user|tojson }}, {{ groups|tojson }})'
+                            onclick='openPanel("users", {{ user|tojson }})'
                         {% endif %}
                     >
                         <h3 id="name">Name: {{ user.FirstName }} {{ user.LastName }}</h3>
@@ -203,7 +205,7 @@
                     </div>
                     {% endfor %}
 
-                    <div class="item" id="create" onclick='openPanel("users", null, {{ groups|tojson }})'>
+                    <div class="item" id="create" onclick='openPanel("users")'>
                         <svg
                             class="add-icon"
                             viewBox="0 0 24 24"

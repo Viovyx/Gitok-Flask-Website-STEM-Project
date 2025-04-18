@@ -1,6 +1,10 @@
 {
     "keycards": {
         "table": "cards",
+        "select_table": {
+            "name": "users",
+            "index": "Email"
+        },
         "id": {
             "type": "number",
             "index": "id",
@@ -21,13 +25,13 @@
         "User_id": {
             "type": "select",
             "index": "User_id",
-            "index_name": "Email",
             "default": 0,
             "description": "Select the user of the keycard."
         }
     },
     "doors": {
         "table": "devices",
+        "select_table": 0,
         "id": {
             "type": "number",
             "index": "fixed",
@@ -69,6 +73,10 @@
     },
     "scanners": {
         "table": "devices",
+        "select_table": {
+            "name": "doors",
+            "index": "Name"
+        },
         "id": {
             "type": "number",
             "index": "fixed",
@@ -99,7 +107,6 @@
         "Door_Id": {
             "type": "select",
             "index": "Door_Id",
-            "index_name": "Name",
             "default": 0,
             "description": "Choose for which door this scanner will be used."
         },
@@ -111,6 +118,10 @@
     },
     "users": {
         "table": "users",
+        "select_table": {
+            "name": "groups",
+            "index": "Groupname"
+        },
         "id": {
             "type": "number",
             "index": "fixed",
@@ -143,7 +154,6 @@
         "Group_id": {
             "type": "select",
             "index": "Group_id",
-            "index_name": "Groupname",
             "default": 0,
             "description": "Select a group for this user. This determines their access to doors and webpanel (admin)."
         },
@@ -155,6 +165,7 @@
     },
     "groups": {
         "table": "groups",
+        "select_table": 0,
         "id": {
             "type": "number",
             "index": "fixed",

@@ -54,8 +54,11 @@ def get_user_data(email):
 def get_api_table(table):
     api_url = api_base_url + table
     response = requests.get(api_url, headers=headers)
-    response = response.json()['records']
-    return response
+    if response.status_code == 200:
+        response = response.json()['records']
+        return response
+    else:
+        return False
 
 def get_api_data(table, key, value):
     api_url = api_base_url + f"{table}?filter={key},eq,{value}"
@@ -528,6 +531,24 @@ def connect():
 def disconnect():
     print('[SocketIO] Client disconnected',  request.sid)
 
+@socketio.on("getSelectItems")
+def handle_get_select_items(data):
+    table = data.get("table")
+    index = data.get("index")
+
+    try:
+        match table:
+            case "doors":
+                items = [door for door in get_api_table("devices") if door["Type"] == "lock"]
+            case _:
+                items = get_api_table(table)
+        if items:
+            select_items = [{"id":item["id"], "value":item[index]} for item in items]
+            socketio.emit("selectItemsResponse", {"items": select_items})
+        else:
+            raise Exception("Table not found.")
+    except Exception as e:
+        socketio.emit("selectItemsResponse", {"error": str(e)})
 
 # --------
 # Run App
