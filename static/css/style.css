@@ -423,6 +423,9 @@ form button:active {
 
 /* Home Page */
 .edit-panel, #edit-panel-loader {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     position: fixed;
     top: 0;
     left: 0;
@@ -432,19 +435,12 @@ form button:active {
 }
 
 #edit-panel-loader {
-    display: flex;
-    align-items: center;
-    justify-content: center;
     background-color: rgba(0, 0, 0, 0.5);
     z-index: 9;
 }
 
 .panel-wrapper {
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 25vh;
-    margin: 0 20vw;
+    width: 50vw;
     padding: 1rem;
     background-color: var(--background);
     border: 2px solid var(--border);

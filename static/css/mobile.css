@@ -148,10 +148,11 @@
 }
 
 .row:has(.button-delete), .row.legend {
+  flex-direction: column;
   justify-content: space-around;
 }
 
 .button-delete {
-  width: 20vw;
+  width: 100px;
   border-radius: 5px  ;
 }
