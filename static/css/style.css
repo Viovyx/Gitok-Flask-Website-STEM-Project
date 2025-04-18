@@ -69,6 +69,31 @@ h2 {
     margin: 0 0 1rem 0;
 }
 
+/* -- Loader -- */
+.loader {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+  
+  .loader:before , .loader:after{
+    content: '';
+    border-radius: 50%;
+    position: absolute;
+    inset: 0;
+    box-shadow: 0 0 10px 5px rgba(0, 0, 0, 0.3) inset;
+  }
+  .loader:after {
+    box-shadow: 0 5px 0 var(--secondary) inset;
+    animation: rotate 2s linear infinite;
+  }
+  
+  @keyframes rotate {
+    0% {  transform: rotate(0)}
+    100% { transform: rotate(360deg)}
+  }
+
+
 /* --- Page Wrapper --- */
 .page-wrapper {
     flex: 1;
@@ -397,14 +422,21 @@ form button:active {
 
 
 /* Home Page */
-.edit-panel {
+.edit-panel, #edit-panel-loader {
     position: fixed;
     top: 0;
     left: 0;
     width: 100vw;
     height: 100vh;
-    background-color: rgba(0, 0, 0, 0.5);
     z-index: 10;
+}
+
+#edit-panel-loader {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 9;
 }
 
 .panel-wrapper {

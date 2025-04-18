@@ -2,6 +2,7 @@ var table_name;
 var id_num;
 
 var panel = document.getElementById("edit-panel");
+var panel_loader = document.getElementById("edit-panel-loader");
 var panel_fields = {};
 fetch("/static/js/panel_fields.json")
     .then((response) => response.json())
@@ -11,6 +12,8 @@ fetch("/static/js/panel_fields.json")
 var socket = io.connect();
 
 async function openPanel(name, item = null) {
+    panel_loader.classList.remove("hidden");
+
     const fields = panel_fields[name];
     if (!fields) {
         console.log(`[ERROR] Found format for '${name} (id: ${item["id"]})'`);
@@ -81,7 +84,10 @@ async function openPanel(name, item = null) {
 
 async function getSelectItems(select_table) {
     return new Promise((resolve, reject) => {
-        socket.emit("getSelectItems", { "table":select_table["name"], "index":select_table["index"] });
+        socket.emit("getSelectItems", {
+            table: select_table["name"],
+            index: select_table["index"],
+        });
 
         socket.on("selectItemsResponse", (data) => {
             if (data.error) {
@@ -122,9 +128,7 @@ function generateOptions(fields, select_items = null, item = null) {
                                     ? "selected"
                                     : ""
                                 : ""
-                        }>${option["id"]} - ${
-                            option["value"]
-                        }</option>`;
+                        }>${option["id"]} - ${option["value"]}</option>`;
                     }
                     optionsHTML += `</select>`;
                 } else {
@@ -185,6 +189,7 @@ function generateOptions(fields, select_items = null, item = null) {
 
 function closePanel() {
     panel.classList.add("hidden");
+    panel_loader.classList.add("hidden");
 }
 
 function confirmDelete() {
