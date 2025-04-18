@@ -251,7 +251,7 @@ def home():
                                 keycards=get_api_table("cards"),
                                 scanners=[scanner for scanner in devices if scanner["Type"] == "scanner"],
                                 doors=[door for door in devices if door["Type"] == "lock"],
-                                users=get_api_table("users"),
+                                users=[{key: value for key, value in user.items() if key != "Password"} for user in get_api_table("users")],
                                 groups=get_api_table("groups"))
     
     fields = request.form
