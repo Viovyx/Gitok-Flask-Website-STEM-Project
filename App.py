@@ -430,15 +430,17 @@ def handle_mqtt_message(client, userdata, message):
             if user_id:
                 user_info = get_api_data("users", "id", user_id)[0]
                 email = user_info["Email"]
-                new_door_id = get_api_data("devices", "IP", door_ip if action != 2 else 0)[0]["id"]
+                new_door_id = get_api_data("devices", "IP", door_ip if action != 2 else 0)
 
-                socketio.emit("updateDoorUser", {"user_id":user_id, "first_name":user_info["FirstName"], "last_name":user_info["LastName"], "new_door":new_door_id})
-                put_api_data("users", user_info["id"], {"Current_Door":new_door_id})
+                if len(new_door_id):
+                    new_door_id = new_door_id[0]["id"]
+                    socketio.emit("updateDoorUser", {"user_id":user_id, "first_name":user_info["FirstName"], "last_name":user_info["LastName"], "new_door":new_door_id})
+                    put_api_data("users", user_info["id"], {"Current_Door":new_door_id})
 
-                # Open door
-                if action == 1:
-                    open_feed = "Tapgate/feeds/lock.open"
-                    mqtt.publish(open_feed, door_ip)
+                    # Open door
+                    if action == 1:
+                        open_feed = "Tapgate/feeds/lock.open"
+                        mqtt.publish(open_feed, door_ip)
 
             log_description = create_log_description(action_data)
             post_log(log_description, email)
@@ -515,9 +517,12 @@ def handle_mqtt_message(client, userdata, message):
 
         case "Tapgate/feeds/lock.status":
             data = json.loads(message.payload.decode())  # {"status":0, "door_ip":"192.168.0.11"}
-            door_info = get_api_data("devices", "IP", data["door_ip"])[0]
-            socketio.emit("updateDoorState", {"door_id":door_info["id"], "status":data["status"]})
-            put_api_data("devices", door_info["id"], {"Status":data["status"]})
+            door_info = get_api_data("devices", "IP", data["door_ip"])
+
+            if len(door_info):
+                door_info = door_info[0]
+                socketio.emit("updateDoorState", {"door_id":door_info["id"], "status":data["status"]})
+                put_api_data("devices", door_info["id"], {"Status":data["status"]})
 
         case _:
             print("[MQTT] Unknown message topic recieved: " + message.topic)
