@@ -17,13 +17,13 @@
     --warning-content: #fbfce9;
     --error-content: #fce9e9;
 
-    --background: var(--background-lm);
-    --foreground: var(--foreground-lm);
-    --border: var(--border-lm);
+    --background: var(--background-dm);
+    --foreground: var(--foreground-dm);
+    --border: var(--border-dm);
 
-    --copy: var(--copy-lm);
-    --copy-light: var(--copy-light-lm);
-    --copy-lighter: var(--copy-lighter-lm);
+    --copy: var(--copy-dm);
+    --copy-light: var(--copy-light-dm);
+    --copy-lighter: var(--copy-lighter-dm);
 
     /* Lightmode */
     --background-lm: #eff0f1;

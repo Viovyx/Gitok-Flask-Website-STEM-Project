@@ -1,8 +1,8 @@
 var mode = localStorage.getItem("mode");
 
 if (mode == null) {
-    localStorage.setItem("mode", "lm");
-    mode = "lm";
+    localStorage.setItem("mode", "dm");
+    mode = "dm";
 }
 
 async function setTheme(mode = "lm") {
