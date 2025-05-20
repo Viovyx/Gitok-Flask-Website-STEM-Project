@@ -125,6 +125,12 @@ function removeFirstData() {
 
 const MAX_DATA_COUNT = 7;
 
+function openDoor(IP, Name) {
+  if (confirm(`Are you sure you want to open '${Name}'?`)) {
+    socket.emit("openDoor", {IP: IP});
+  }
+}
+
 //connect to the socket server.
 const socket = io.connect();
 

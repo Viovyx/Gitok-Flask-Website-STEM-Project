@@ -157,6 +157,7 @@ def getDoorsData():
         users = get_api_data("users", "Current_Door", door["id"])
         door_obj = {
             "id":door["id"],
+            "IP":door["IP"],
             "Name":door["Name"],
             "Status":states[door["Status"]],
             "Users":users
@@ -561,6 +562,12 @@ def handle_get_select_items(data):
             raise Exception("Table not found.")
     except Exception as e:
         socketio.emit("selectItemsResponse", {"error": str(e)})
+
+@socketio.on("openDoor")
+def open_door(data):
+    IP = data.get("IP")
+    open_feed = "Tapgate/feeds/lock.open"
+    mqtt.publish(open_feed, IP)
 
 # --------
 # Run App
