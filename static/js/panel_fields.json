@@ -58,7 +58,7 @@
             "type": "text",
             "index": "unique",
             "default": "192.168.0.1",
-            "description": "Make sure to give the door a static or reserved IP address."
+            "description": "Make sure to give the door a static or reserved IP address. Must be unique accross all devices."
         },
         "Door_Id": {
             "type": "number",
@@ -102,7 +102,7 @@
             "type": "text",
             "index": "unique",
             "default": "192.168.0.1",
-            "description": "Make sure to give the scanner a static or reserved IP address."
+            "description": "Make sure to give the scanner a static or reserved IP address. Must be unique accross all devices."
         },
         "Door_Id": {
             "type": "select",
