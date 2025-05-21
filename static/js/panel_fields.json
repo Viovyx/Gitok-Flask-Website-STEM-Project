@@ -56,7 +56,7 @@
         },
         "IP": {
             "type": "text",
-            "index": 0,
+            "index": "unique",
             "default": "192.168.0.1",
             "description": "Make sure to give the door a static or reserved IP address."
         },
@@ -100,7 +100,7 @@
         },
         "IP": {
             "type": "text",
-            "index": 0,
+            "index": "unique",
             "default": "192.168.0.1",
             "description": "Make sure to give the scanner a static or reserved IP address."
         },
