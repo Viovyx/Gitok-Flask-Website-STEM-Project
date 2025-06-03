@@ -44,7 +44,7 @@
                 <hr />
 
                 <h1 id="doors">Doors</h1>
-                <p class="subscript">View the state of each door and monitor the current users per door.</p>
+                <p class="subscript">View the state of each door and monitor the current users per door. Click on a door to manually open it.</p>
                 <div class="legend row">
                     <span class="legend-success">door open</span>
                     <span class="legend-error">door closed</span>
@@ -52,7 +52,7 @@
                 </div>
                 <div class="data-grid" id="doors">
                     {% for door in doors %}
-                        <div class="item {{ door.Status }}" id="door-{{ door.id }}">
+                        <div class="item {{ door.Status }}" id="door-{{ door.id }}" {% if door.id != 1 %}onclick="openDoor('{{ door.IP }}', '{{ door.Name }} (id: {{ door.id }})')"{% endif %}>
                             <h3>{{ door.Name }} (id: {{ door.id }})</h3>
                             <ul id="door-ul-{{ door.id }}">
                                 {% for user in door.Users %}

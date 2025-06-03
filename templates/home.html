@@ -95,22 +95,22 @@
                 <h2 id="doors">Doors</h2>
                 <div class="data-grid">
                     {% for door in doors %}
-                        <div
-                            class="item {% if door.id == 1 %}hidden{% endif %}"
-                            id="door-{{ door.id }}"
-                            {% if door.id != 1 %}
+                        {% if door.id != 1 %}
+                            <div
+                                class="item"
+                                id="door-{{ door.id }}"
                                 onclick='openPanel("doors", {{ door|tojson }})'
-                            {% endif %}
-                        >
-                            <h3 id="name">Name: {{ door.Name }}</h3>
-                            <ul>
-                                <li id="id">id: {{ door.id }}</li>
-                                <li id="Name">Name: {{ door.Name }}</li>
-                                <li id="Access">Access: {{ door.Access }}</li>
-                                <li id="IP">IP: {{ door.IP }}</li>
-                                <li id="Status">Status: {{ door.Status }}</li>
-                            </ul>
-                        </div>
+                            >
+                                <h3 id="name">Name: {{ door.Name }}</h3>
+                                <ul>
+                                    <li id="id">id: {{ door.id }}</li>
+                                    <li id="Name">Name: {{ door.Name }}</li>
+                                    <li id="Access">Access: {{ door.Access }}</li>
+                                    <li id="IP">IP: {{ door.IP }}</li>
+                                    <li id="Status">Status: {{ door.Status }}</li>
+                                </ul>
+                            </div>
+                        {% endif %}
                     {% endfor %}
 
                     <div class="item" id="create" onclick="openPanel('doors')">
@@ -186,23 +186,23 @@
                 <h2 id="users">Users</h2>
                 <div class="data-grid">
                     {% for user in users %}
-                    <div
-                        class="item {% if user.id == 1 %}hidden{% endif %}"
-                        id="user-{{ user.id }}"
                         {% if user.id != 1 %}
-                            onclick='openPanel("users", {{ user|tojson }})'
+                            <div
+                                class="item"
+                                id="user-{{ user.id }}"
+                                onclick='openPanel("users", {{ user|tojson }})'
+                            >
+                                <h3 id="name">Name: {{ user.FirstName }} {{ user.LastName }}</h3>
+                                <ul>
+                                    <li id="id">id: {{ user.id }}</li>
+                                    <li id="Email">Email: {{ user.Email }}</li>
+                                    <li id="FirstName">FirstName: {{ user.FirstName }}</li>
+                                    <li id="LastName">LastName: {{ user.LastName }}</li>
+                                    <li id="Group_id">Group_id: {{ user.Group_id }}</li>
+                                    <li id="door">Current_Door: {{ user.Current_Door }}</li>
+                                </ul>
+                            </div>
                         {% endif %}
-                    >
-                        <h3 id="name">Name: {{ user.FirstName }} {{ user.LastName }}</h3>
-                        <ul>
-                            <li id="id">id: {{ user.id }}</li>
-                            <li id="Email">Email: {{ user.Email }}</li>
-                            <li id="FirstName">FirstName: {{ user.FirstName }}</li>
-                            <li id="LastName">LastName: {{ user.LastName }}</li>
-                            <li id="Group_id">Group_id: {{ user.Group_id }}</li>
-                            <li id="door">Current_Door: {{ user.Current_Door }}</li>
-                        </ul>
-                    </div>
                     {% endfor %}
 
                     <div class="item" id="create" onclick='openPanel("users")'>
@@ -234,21 +234,21 @@
                 <h2 id="groups">Groups</h2>
                 <div class="data-grid">
                     {% for group in groups %}
-                    <div
-                        class="item {% if group.id == 1 %}hidden{% endif %}"
-                        id="group-{{ group.id }}"
                         {% if group.id != 1 %}
-                            onclick='openPanel("groups", {{ group|tojson }})'
+                            <div
+                                class="item"
+                                id="group-{{ group.id }}"
+                                onclick='openPanel("groups", {{ group|tojson }})'
+                            >
+                                <h3 id="name">Name: {{ group.Groupname }}</h3>
+                                <ul>
+                                    <li id="id">id: {{ group.id }}</li>
+                                    <li id="Groupname">Groupname: {{ group.Groupname }}</li>
+                                    <li id="Admin">Admin: {{ group.Admin }}</li>
+                                    <li id="Access">Access: {{ group.Access }}</li>
+                                </ul>
+                            </div>
                         {% endif %}
-                    >
-                        <h3 id="name">Name: {{ group.Groupname }}</h3>
-                        <ul>
-                            <li id="id">id: {{ group.id }}</li>
-                            <li id="Groupname">Groupname: {{ group.Groupname }}</li>
-                            <li id="Admin">Admin: {{ group.Admin }}</li>
-                            <li id="Access">Access: {{ group.Access }}</li>
-                        </ul>
-                    </div>
                     {% endfor %}
 
                     <div class="item" id="create" onclick="openPanel('groups')">
