@@ -441,11 +441,11 @@ def handle_mqtt_message(client, userdata, message):
 
                 if len(new_door_id):
                     new_door_id = new_door_id[0]["id"]
-                    socketio.emit("updateDoorUser", {"user_id":user_id, "first_name":user_info["FirstName"], "last_name":user_info["LastName"], "new_door":new_door_id})
-                    put_api_data("users", user_info["id"], {"Current_Door":new_door_id})
 
                     # Open door
                     if action == 1:
+                        socketio.emit("updateDoorUser", {"user_id":user_id, "first_name":user_info["FirstName"], "last_name":user_info["LastName"], "new_door":new_door_id})
+                        put_api_data("users", user_info["id"], {"Current_Door":new_door_id})
                         open_feed = "Tapgate/feeds/lock.open"
                         mqtt.publish(open_feed, door_ip)
 
