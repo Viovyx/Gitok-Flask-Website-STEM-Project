@@ -440,12 +440,14 @@ form button:active {
 }
 
 .panel-wrapper {
+    max-height: 95vh;
     width: 50vw;
     padding: 1rem;
     background-color: var(--background);
     border: 2px solid var(--border);
     border-radius: 10px;
     box-shadow: 0 0 10px var(--border);
+    overflow-y: scroll;
 }
 
 .item#create {

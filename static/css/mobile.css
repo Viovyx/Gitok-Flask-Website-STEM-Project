@@ -99,6 +99,7 @@
   left: 0;
   margin: 0;
   width: 100vw;
+  max-height: 100vh;
   height: 100vh;
   border-radius: 0;
   border: none;
